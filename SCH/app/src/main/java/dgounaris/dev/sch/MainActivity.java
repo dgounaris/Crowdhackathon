@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     Person activeperson = null;
     MyDBHelper databaseHelper;
-    Fragment activeFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -85,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
     public int onRedeemPoints(int serviceId, int pointsNeeded) {
         return databaseHelper.redeemService(serviceId, pointsNeeded, this.activeperson.getId());
+    }
+
+    public void onAddPoints(int person_id, int pointsAdded) {
+        this.databaseHelper.set_balance(pointsAdded, person_id);
     }
 
     public ArrayList<Bin> getAllBins() {
