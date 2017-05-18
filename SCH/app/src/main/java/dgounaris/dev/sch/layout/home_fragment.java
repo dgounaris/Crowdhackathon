@@ -60,6 +60,8 @@ public class home_fragment extends Fragment {
                 newFragment.setArguments(bundle);
                 ft.replace(((ViewGroup)getView().getParent()).getId(), newFragment);
                 ft.commit();
+                //Enable Bluetooth
+
             }
         });
         return view;

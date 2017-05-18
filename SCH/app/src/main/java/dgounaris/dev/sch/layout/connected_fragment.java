@@ -1,6 +1,13 @@
 package dgounaris.dev.sch.layout;
 
 import android.animation.ValueAnimator;
+import android.app.DownloadManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -13,6 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.util.Set;
 
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
@@ -30,6 +39,23 @@ public class connected_fragment extends Fragment {
     private TextView points_text;
     private TextView points_raw_text;
 
+    private final static int REQUEST_ENABLE_BT = 1;
+
+    // Create a BroadcastReceiver for ACTION_FOUND.
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Discovery has found a device. Get the BluetoothDevice
+                // object and its info from the Intent.
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String deviceName = device.getName();
+                String deviceHardwareAddress = device.getAddress(); // MAC address
+            }
+        }
+    };
+
+
     public connected_fragment() {
         // Required empty public constructor
     }
@@ -43,6 +69,11 @@ public class connected_fragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activeperson = (Person) getArguments().getSerializable("activeperson");
+
+        // Register for broadcasts when a device is discovered.
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        getActivity().registerReceiver(mReceiver, filter);
+
     }
 
     @Override
@@ -70,6 +101,32 @@ public class connected_fragment extends Fragment {
                         onConnectionEstablished();
                     }
                 }, 3000);
+        //Bluetooth Start
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0) {
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                String deviceName = device.getName();
+                String deviceHardwareAddress = device.getAddress(); // MAC address
+            }
+        }
+        else {
+            mBluetoothAdapter.startDiscovery();
+        }
+
+        //Bluetooth End
     }
 
     private void onConnectionEstablished() {
@@ -109,5 +166,7 @@ public class connected_fragment extends Fragment {
         activeperson.setPoints(activeperson.getPoints()+points_added);
         ((MainActivity)getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
+
+    
 
 }
