@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         databaseHelper = new MyDBHelper(getApplicationContext());
-        getPersonInfo();
+        activeperson = (Person) getIntent().getSerializableExtra("activeperson");
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_connect);
@@ -70,12 +70,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.framelayout, default_fragment);
         transaction.commit();
-    }
-
-    public boolean getPersonInfo() {
-        activeperson = databaseHelper.getPerson(1);
-        databaseHelper.setPersonTrophies(activeperson);
-        return true;
     }
 
     public ArrayList<Service> getAvailableServices() {
