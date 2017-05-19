@@ -167,6 +167,6 @@ public class connected_fragment extends Fragment {
         ((MainActivity)getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
 
-    
+
 
 }

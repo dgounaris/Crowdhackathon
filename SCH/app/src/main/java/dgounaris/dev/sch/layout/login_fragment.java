@@ -67,7 +67,6 @@ public class login_fragment extends Fragment {
             return;
         }
         Person person = databaseHelper.getPerson(id);
-        databaseHelper.getPersonTrophies(person);
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.putExtra("activeperson", person);
         startActivity(intent);
