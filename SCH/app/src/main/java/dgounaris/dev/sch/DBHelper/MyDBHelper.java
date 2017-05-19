@@ -135,10 +135,12 @@ public class MyDBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         this.close();
+        if (mPerson!=null)
+            getPersonTrophies(mPerson);
         return mPerson;
     }
 
-    public boolean setPersonTrophies(Person myperson) {
+    public boolean getPersonTrophies(Person myperson) {
         ArrayList<Trophy> myTrophies = new ArrayList<>();
         String myQuery = "select t." + MyDBContract.Trophies.COLUMN_NAME_NAME + ", t." + MyDBContract.Trophies.COLUMN_NAME_DESCRIPTION + ", t." + MyDBContract.Trophies.COLUMN_NAME_IMAGE +
                 " from " + MyDBContract.People_Trophies.TABLE_NAME + " pt, " + MyDBContract.Trophies.TABLE_NAME + " t " +
@@ -265,6 +267,23 @@ public class MyDBHelper extends SQLiteOpenHelper {
         cursor.close();
         this.close();
         return binArrayList;
+    }
+
+    public int checkCredentials(String username, String password) {
+        int result = -1;
+        if (username.equals("") || password.equals("")) {
+            return result;
+        }
+        this.openDatabase();
+        String myQuery  = "select " + MyDBContract.Credentials.COLUMN_NAME_PERSON_ID + " from " + MyDBContract.Credentials.TABLE_NAME +
+                " where " + MyDBContract.Credentials.COLUMN_NAME_USERNAME + " = \"" + username + "\" and " + MyDBContract.Credentials.COLUMN_NAME_PASSWORD + " = \"" + password + "\"";
+        Cursor cursor = this.myDatabase.rawQuery(myQuery,null);
+        if (cursor.moveToFirst()) {
+            result = cursor.getInt(cursor.getColumnIndex(MyDBContract.Credentials.COLUMN_NAME_PERSON_ID));
+        }
+        cursor.close();
+        this.close();
+        return result;
     }
 }
 
