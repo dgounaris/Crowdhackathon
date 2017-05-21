@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import dgounaris.dev.sch.layout.login_fragment;
+import dgounaris.dev.sch.layout.register_fragment;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -14,6 +15,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.framelayout, login_fragment.newInstance());
+        transaction.commit();
+    }
+
+    public void toRegister() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.framelayout, register_fragment.newInstance());
         transaction.commit();
     }
 }

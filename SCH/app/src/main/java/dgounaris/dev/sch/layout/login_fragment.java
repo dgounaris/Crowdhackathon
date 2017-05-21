@@ -57,6 +57,12 @@ public class login_fragment extends Fragment {
                 onLoginAccount(username.getText().toString(), password.getText().toString());
             }
         });
+        to_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((LoginActivity) getActivity()).toRegister();
+            }
+        });
         return view;
     }
 
