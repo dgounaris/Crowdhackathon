@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.StringTokenizer;
 import dgounaris.dev.sch.Bins.Bin;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
+import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.adapter.Trophy;
 
 /**
@@ -135,10 +138,12 @@ public class MyDBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         this.close();
+        if (mPerson!=null)
+            getPersonTrophies(mPerson);
         return mPerson;
     }
 
-    public boolean setPersonTrophies(Person myperson) {
+    public boolean getPersonTrophies(Person myperson) {
         ArrayList<Trophy> myTrophies = new ArrayList<>();
         String myQuery = "select t." + MyDBContract.Trophies.COLUMN_NAME_NAME + ", t." + MyDBContract.Trophies.COLUMN_NAME_DESCRIPTION + ", t." + MyDBContract.Trophies.COLUMN_NAME_IMAGE +
                 " from " + MyDBContract.People_Trophies.TABLE_NAME + " pt, " + MyDBContract.Trophies.TABLE_NAME + " t " +
@@ -265,6 +270,57 @@ public class MyDBHelper extends SQLiteOpenHelper {
         cursor.close();
         this.close();
         return binArrayList;
+    }
+
+    public int checkCredentials(String username, String password) {
+        int result = -1;
+        if (username.equals("") || password.equals("")) {
+            return result;
+        }
+        this.openDatabase();
+        String myQuery  = "select " + MyDBContract.Credentials.COLUMN_NAME_PERSON_ID + " from " + MyDBContract.Credentials.TABLE_NAME +
+                " where " + MyDBContract.Credentials.COLUMN_NAME_USERNAME + " = \"" + username + "\" and " + MyDBContract.Credentials.COLUMN_NAME_PASSWORD + " = \"" + password + "\"";
+        Cursor cursor = this.myDatabase.rawQuery(myQuery,null);
+        if (cursor.moveToFirst()) {
+            result = cursor.getInt(cursor.getColumnIndex(MyDBContract.Credentials.COLUMN_NAME_PERSON_ID));
+        }
+        cursor.close();
+        this.close();
+        return result;
+    }
+
+    public boolean checkForUniqueUsername(String username) {
+        this.openDatabase();
+        String myQuery = "select " + MyDBContract.Credentials.COLUMN_NAME_USERNAME + " from " + MyDBContract.Credentials.TABLE_NAME + " where " + MyDBContract.Credentials.COLUMN_NAME_USERNAME + " = \"" + username + "\"";
+        Cursor cursor = this.myDatabase.rawQuery(myQuery, null);
+        if (cursor.moveToFirst()) {
+            return false;
+        }
+        cursor.close();
+        this.close();
+        return true;
+    }
+
+    public void registerAccount(String username, String password, String name, String surname, Bitmap image) {
+        this.openDatabase();
+        String myQuery = "insert into " + MyDBContract.Credentials.TABLE_NAME + " (" + MyDBContract.Credentials.COLUMN_NAME_USERNAME + "," + MyDBContract.Credentials.COLUMN_NAME_PASSWORD +") " +
+                "values (\"" + username + "\",\"" + password + "\")";
+        Cursor cursor = this.myDatabase.rawQuery(myQuery,null);
+        cursor.moveToFirst();
+        cursor.close();
+        if (image == null) {
+            image = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.profile_material);
+        }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        byte[] byteimg = stream.toByteArray();
+        ContentValues cv = new ContentValues();
+        cv.put(MyDBContract.People.COLUMN_NAME_NAME, name);
+        cv.put(MyDBContract.People.COLUMN_NAME_SURNAME, surname);
+        cv.put(MyDBContract.People.COLUMN_NAME_POINTS, 0);
+        cv.put(MyDBContract.People.COLUMN_NAME_IMAGE, byteimg);
+        this.myDatabase.insert(MyDBContract.People.TABLE_NAME, null, cv);
+        this.close();
     }
 }
 

@@ -1,16 +1,10 @@
 package dgounaris.dev.sch.layout;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,19 +15,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.HOFActivity;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.adapter.ServiceAdapter;
-import dgounaris.dev.sch.adapter.Trophy;
-import dgounaris.dev.sch.adapter.TrophyAdapter;
 
 public class profile_fragment extends Fragment {
 
@@ -52,22 +41,6 @@ public class profile_fragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activeperson = (Person) getArguments().getSerializable("activeperson");
-
-        int is_from_home = getArguments().getInt("from_home", 0);
-        if (is_from_home == 1) {
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyDBHelper mdb = new MyDBHelper(getContext());
-
-                        TextView balance = (TextView) getActivity().findViewById(R.id.balance);
-                        balance.setText(mdb.set_balance(10, activeperson.getId()) + " points");
-                        activeperson.setPoints(activeperson.getPoints()+10);
-                        Toast.makeText(getContext(),"10 points added!",Toast.LENGTH_SHORT).show();
-                    }
-            }, 3000);
-        }
     }
 
     @Override
@@ -84,16 +57,31 @@ public class profile_fragment extends Fragment {
         TextView balance = (TextView) view.findViewById(R.id.balance);
         balance.setText(activeperson.getPoints() + " points");
 
-        ArrayList<Trophy> trophies;
-        // SET VALUES TO TROPHIES HERE
-        trophies = activeperson.getTrophies();
+//        ArrayList<Trophy> trophies;
+//        // SET VALUES TO TROPHIES HERE
+//        trophies = activeperson.getTrophies();
+//
+//        TrophyAdapter adapter = new TrophyAdapter(getContext(), trophies);
+//
+//        ListView listView = (ListView) view.findViewById(R.id.trophy_list);
+//        // listView.setBackgroundColor(Color.parseColor("#8800A0"));
+//
+//        listView.setAdapter(adapter);
 
-        TrophyAdapter adapter = new TrophyAdapter(getContext(), trophies);
-
-        ListView listView = (ListView) view.findViewById(R.id.trophy_list);
-        // listView.setBackgroundColor(Color.parseColor("#8800A0"));
-
-        listView.setAdapter(adapter);
+        Button trophybutton = (Button) view.findViewById(R.id.trophy_button);
+        trophybutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Trophy_Fragment newFragment = Trophy_Fragment.newInstance();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("activeperson", activeperson);
+                newFragment.setArguments(bundle);
+                ft.replace(((ViewGroup)getView().getParent()).getId(), newFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
 
         Button redeembutton = (Button) view.findViewById(R.id.redeem_button);
         redeembutton.setOnClickListener(new View.OnClickListener() {

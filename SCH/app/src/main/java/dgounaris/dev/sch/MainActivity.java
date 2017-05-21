@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     Person activeperson = null;
     MyDBHelper databaseHelper;
-    Fragment activeFragment;
+    BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             mainFragment.setArguments(bundle);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.framelayout, mainFragment);
+            transaction.addToBackStack(null);
             transaction.commit();
             return true;
         }
@@ -59,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         databaseHelper = new MyDBHelper(getApplicationContext());
-        getPersonInfo();
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        activeperson = (Person) getIntent().getSerializableExtra("activeperson");
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_connect);
         // default fragment
@@ -73,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public boolean getPersonInfo() {
-        activeperson = databaseHelper.getPerson(1);
-        databaseHelper.setPersonTrophies(activeperson);
-        return true;
-    }
-
     public ArrayList<Service> getAvailableServices() {
         return databaseHelper.getServices();
     }
@@ -87,8 +82,20 @@ public class MainActivity extends AppCompatActivity {
         return databaseHelper.redeemService(serviceId, pointsNeeded, this.activeperson.getId());
     }
 
+    public void onAddPoints(int person_id, int pointsAdded) {
+        this.databaseHelper.set_balance(pointsAdded, person_id);
+    }
+
     public ArrayList<Bin> getAllBins() {
         return databaseHelper.getBins();
+    }
+
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        if (count>0) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 
 }
