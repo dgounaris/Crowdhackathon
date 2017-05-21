@@ -59,8 +59,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="30dp"
                     android:text="Surname"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Photo"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp" />
 
@@ -119,6 +127,22 @@
                     android:background="#FFFFFF"
                     android:hint="Enter your surname"
                     android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/choose_photo_button"
+                    android:layout_width="160dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="Choose photo"
+                    android:layout_gravity="end"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginBottom="10dp"/>
+
+                <ImageView
+                    android:id="@+id/photo_chosen"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="end"/>
 
             </LinearLayout>
 
