@@ -1,16 +1,10 @@
 package dgounaris.dev.sch.layout;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +15,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.HOFActivity;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.Utils.Trophy_Fragment;
 import dgounaris.dev.sch.adapter.ServiceAdapter;
-import dgounaris.dev.sch.adapter.Trophy;
-import dgounaris.dev.sch.adapter.TrophyAdapter;
 
 public class profile_fragment extends Fragment {
 
@@ -90,6 +78,7 @@ public class profile_fragment extends Fragment {
                 bundle.putSerializable("activeperson", activeperson);
                 newFragment.setArguments(bundle);
                 ft.replace(((ViewGroup)getView().getParent()).getId(), newFragment);
+                ft.addToBackStack(null);
                 ft.commit();
             }
         });

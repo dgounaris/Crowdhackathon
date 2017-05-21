@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     Person activeperson = null;
     MyDBHelper databaseHelper;
+    BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             mainFragment.setArguments(bundle);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.framelayout, mainFragment);
+            transaction.addToBackStack(null);
             transaction.commit();
             return true;
         }
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         databaseHelper = new MyDBHelper(getApplicationContext());
         activeperson = (Person) getIntent().getSerializableExtra("activeperson");
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_connect);
         // default fragment
@@ -86,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<Bin> getAllBins() {
         return databaseHelper.getBins();
+    }
+
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        if (count>0) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 
 }

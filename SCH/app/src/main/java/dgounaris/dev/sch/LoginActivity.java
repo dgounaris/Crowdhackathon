@@ -21,6 +21,16 @@ public class LoginActivity extends AppCompatActivity {
     public void toRegister() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.framelayout, register_fragment.newInstance());
+        transaction.addToBackStack(null);
         transaction.commit();
     }
+
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        if (count>0) {
+            getSupportFragmentManager().popBackStack();
+        }
+    }
+
 }
