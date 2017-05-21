@@ -31,6 +31,7 @@ import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
+import dgounaris.dev.sch.Utils.Trophy_Fragment;
 import dgounaris.dev.sch.adapter.ServiceAdapter;
 import dgounaris.dev.sch.adapter.Trophy;
 import dgounaris.dev.sch.adapter.TrophyAdapter;
@@ -68,16 +69,30 @@ public class profile_fragment extends Fragment {
         TextView balance = (TextView) view.findViewById(R.id.balance);
         balance.setText(activeperson.getPoints() + " points");
 
-        ArrayList<Trophy> trophies;
-        // SET VALUES TO TROPHIES HERE
-        trophies = activeperson.getTrophies();
+//        ArrayList<Trophy> trophies;
+//        // SET VALUES TO TROPHIES HERE
+//        trophies = activeperson.getTrophies();
+//
+//        TrophyAdapter adapter = new TrophyAdapter(getContext(), trophies);
+//
+//        ListView listView = (ListView) view.findViewById(R.id.trophy_list);
+//        // listView.setBackgroundColor(Color.parseColor("#8800A0"));
+//
+//        listView.setAdapter(adapter);
 
-        TrophyAdapter adapter = new TrophyAdapter(getContext(), trophies);
-
-        ListView listView = (ListView) view.findViewById(R.id.trophy_list);
-        // listView.setBackgroundColor(Color.parseColor("#8800A0"));
-
-        listView.setAdapter(adapter);
+        Button trophybutton = (Button) view.findViewById(R.id.trophy_button);
+        trophybutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Trophy_Fragment newFragment = Trophy_Fragment.newInstance();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("activeperson", activeperson);
+                newFragment.setArguments(bundle);
+                ft.replace(((ViewGroup)getView().getParent()).getId(), newFragment);
+                ft.commit();
+            }
+        });
 
         Button redeembutton = (Button) view.findViewById(R.id.redeem_button);
         redeembutton.setOnClickListener(new View.OnClickListener() {
