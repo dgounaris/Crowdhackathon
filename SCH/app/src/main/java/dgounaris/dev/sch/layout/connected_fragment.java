@@ -1,6 +1,7 @@
 package dgounaris.dev.sch.layout;
 
 import android.animation.ValueAnimator;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,21 +12,31 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
+import dgounaris.dev.sch.adapter.Bluetooth_devicesAdapter;
+import dgounaris.dev.sch.bluetooth_devicesActivity;
+
+import static dgounaris.dev.sch.R.id.container;
 
 /**
  * Created by DimitrisLPC on 17/5/2017.
@@ -93,47 +104,18 @@ public class connected_fragment extends Fragment {
         progress_bar.setVisibility(View.VISIBLE);
         points_text.setVisibility(View.INVISIBLE);
         points_raw_text.setVisibility(View.INVISIBLE);
-        Handler myHandler = new Handler();
-        myHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        onConnectionEstablished();
-                    }
-                }, 3000);
-        //Bluetooth Start
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-        }
+        Intent intent = new Intent(getActivity(), bluetooth_devicesActivity.class);
+        startActivity(intent);
 
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
 
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0) {
-            // There are paired devices. Get the name and address of each paired device.
-            for (BluetoothDevice device : pairedDevices) {
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-            }
-        }
-        else {
-            mBluetoothAdapter.startDiscovery();
-        }
-
-        //Bluetooth End
     }
 
     private void onConnectionEstablished() {
         connection_status.setText("Connection established");
         progress_bar.setVisibility(View.INVISIBLE);
         points_text.setVisibility(View.VISIBLE);
-        points_text.setText(activeperson.getPoints()+"");
+        points_text.setText(activeperson.getPoints() + "");
         points_raw_text.setVisibility(View.VISIBLE);
         Handler myHandler = new Handler();
         myHandler.postDelayed(
@@ -155,7 +137,7 @@ public class connected_fragment extends Fragment {
     }
 
     private void addPoints(int points_added) {
-        ValueAnimator animator = ValueAnimator.ofInt(activeperson.getPoints(), activeperson.getPoints()+points_added);
+        ValueAnimator animator = ValueAnimator.ofInt(activeperson.getPoints(), activeperson.getPoints() + points_added);
         animator.setDuration(1000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -163,10 +145,9 @@ public class connected_fragment extends Fragment {
             }
         });
         animator.start();
-        activeperson.setPoints(activeperson.getPoints()+points_added);
-        ((MainActivity)getActivity()).onAddPoints(activeperson.getId(), points_added);
+        activeperson.setPoints(activeperson.getPoints() + points_added);
+        ((MainActivity) getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
-
 
 
 }

@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp"
         android:layout_marginBottom="40dp"
+        android:layout_marginTop="50dp"
         android:text="Connecting..."
         android:textColor="#FFFFFF"
         android:textSize="28sp" />
@@ -20,10 +20,9 @@
         android:id="@+id/progress_circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
         android:layout_gravity="center_horizontal"
-        android:indeterminateDrawable="@drawable/progressbar"
-        />
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/progressbar" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -31,23 +30,22 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp">
 
-    <TextView
-        android:id="@+id/points_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        android:layout_gravity="center_horizontal"
-        />
+        <TextView
+            android:id="@+id/points_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/points_rawtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text=" points"
             android:textColor="#FFFFFF"
-            android:textSize="36sp"
-            android:text=" points"/>
+            android:textSize="36sp" />
 
-        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
