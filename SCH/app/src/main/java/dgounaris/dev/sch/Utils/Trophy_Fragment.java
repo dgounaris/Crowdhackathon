@@ -2,7 +2,6 @@ package dgounaris.dev.sch.Utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,8 @@ import java.util.ArrayList;
 
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.adapter.Trophy;
+import dgounaris.dev.sch.Trophies.Trophy;
 import dgounaris.dev.sch.adapter.TrophyAdapter;
-
-import static dgounaris.dev.sch.R.id.container;
 
 /**
  * Created by Rhogarj on 5/21/2017.

@@ -4,10 +4,9 @@ import android.graphics.Bitmap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import dgounaris.dev.sch.Utils.SerializableImage;
-import dgounaris.dev.sch.adapter.Trophy;
+import dgounaris.dev.sch.Trophies.Trophy;
 
 /**
  * Created by DimitrisLPC on 13/5/2017.

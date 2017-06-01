@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.R;
+import dgounaris.dev.sch.Trophies.Trophy;
+
 /**
  * Created by antonis on 06-Mar-17.
  */

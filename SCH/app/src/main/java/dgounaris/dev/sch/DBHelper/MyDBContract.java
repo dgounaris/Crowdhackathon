@@ -19,6 +19,7 @@ final public class MyDBContract {
         public static final String COLUMN_NAME_SURNAME = "Surname";
         public static final String COLUMN_NAME_IMAGE = "Image";
         public static final String COLUMN_NAME_POINTS = "Points";
+        public static final String COLUMN_NAME_TOTALPOINTS = "TotalPoints";
     }
 
     public static class Credentials implements BaseColumns {

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.adapter.Trophy;
+import dgounaris.dev.sch.Trophies.Trophy;
 import dgounaris.dev.sch.adapter.TrophyAdapter;
 
 /**

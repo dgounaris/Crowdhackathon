@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,13 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import dgounaris.dev.sch.Bins.Bin;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.adapter.Trophy;
+import dgounaris.dev.sch.Trophies.Trophy;
 
 /**
  * Created by DimitrisLPC on 13/5/2017.
@@ -145,7 +142,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
     public boolean getPersonTrophies(Person myperson) {
         ArrayList<Trophy> myTrophies = new ArrayList<>();
-        String myQuery = "select t." + MyDBContract.Trophies.COLUMN_NAME_NAME + ", t." + MyDBContract.Trophies.COLUMN_NAME_DESCRIPTION + ", t." + MyDBContract.Trophies.COLUMN_NAME_IMAGE +
+        String myQuery = "select t." + MyDBContract.Trophies.COLUMN_NAME_NAME + ", t." + MyDBContract.Trophies.COLUMN_NAME_DESCRIPTION + ", t." + MyDBContract.Trophies.COLUMN_NAME_IMAGE  + "," + MyDBContract.Trophies.COLUMN_NAME_ID +
                 " from " + MyDBContract.People_Trophies.TABLE_NAME + " pt, " + MyDBContract.Trophies.TABLE_NAME + " t " +
                 "where pt." + MyDBContract.People_Trophies.COLUMN_NAME_PERSON_ID + " = " + myperson.getId() + " and pt." + MyDBContract.People_Trophies.COLUMN_NAME_TROPHY_ID + " = t." + MyDBContract.Trophies.COLUMN_NAME_ID;
         this.openDatabase();
@@ -154,6 +151,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
             do {
                 byte[] myImgByte = cursor.getBlob(cursor.getColumnIndex(MyDBContract.Trophies.COLUMN_NAME_IMAGE)); //image
                 myperson.addTrophy(new Trophy(
+                        cursor.getInt(cursor.getColumnIndex(MyDBContract.Trophies.COLUMN_NAME_ID)),
                         cursor.getString(cursor.getColumnIndex(MyDBContract.Trophies.COLUMN_NAME_NAME)),
                         cursor.getString(cursor.getColumnIndex(MyDBContract.Trophies.COLUMN_NAME_DESCRIPTION)),
                         BitmapFactory.decodeByteArray(myImgByte, 0, myImgByte.length)
@@ -214,14 +212,18 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
     public int set_balance(int points_given, int person_id) {
         this.openDatabase();
-        String sql_get_points = "select " + MyDBContract.People.COLUMN_NAME_POINTS + " from " + MyDBContract.People.TABLE_NAME + " where " + person_id + " = " + MyDBContract.People.COLUMN_NAME_ID;
+        String sql_get_points = "select " + MyDBContract.People.COLUMN_NAME_POINTS + "," + MyDBContract.People.COLUMN_NAME_TOTALPOINTS + " from " + MyDBContract.People.TABLE_NAME + " where " + person_id + " = " + MyDBContract.People.COLUMN_NAME_ID;
         Cursor cursor;
         cursor = this.myDatabase.rawQuery(sql_get_points, null);
         int data = 0;
-        if(cursor.moveToFirst())
+        int totaldata = 0;
+        if(cursor.moveToFirst()) {
             data = cursor.getInt(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_POINTS));
+            totaldata = cursor.getInt(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_TOTALPOINTS));
+        }
         data += points_given;
-        String sql = "update " + MyDBContract.People.TABLE_NAME + " set " + MyDBContract.People.COLUMN_NAME_POINTS + " = " + data + " where " + person_id + " = " + MyDBContract.People.COLUMN_NAME_ID;
+        totaldata += points_given;
+        String sql = "update " + MyDBContract.People.TABLE_NAME + " set " + MyDBContract.People.COLUMN_NAME_POINTS + " = " + data + "," + MyDBContract.People.COLUMN_NAME_TOTALPOINTS + " = " + totaldata + " where " + person_id + " = " + MyDBContract.People.COLUMN_NAME_ID;
         cursor = this.myDatabase.rawQuery(sql,null);
         cursor.moveToFirst();
         cursor.close();
@@ -229,12 +231,12 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return data;
     }
 
-    public ArrayList<Person> top_5(){
+    public ArrayList<Person> getTopByPoints(int max){
         this.openDatabase();
         ArrayList<Person> personArrayList = new ArrayList<>();
         String sql = "select " + MyDBContract.People.COLUMN_NAME_ID + ", " + MyDBContract.People.COLUMN_NAME_NAME + " , " + MyDBContract.People.COLUMN_NAME_SURNAME + " , "
-                + MyDBContract.People.COLUMN_NAME_POINTS + " , " + MyDBContract.People.COLUMN_NAME_IMAGE +
-                " from " + MyDBContract.People.TABLE_NAME + " order by " + MyDBContract.People.COLUMN_NAME_POINTS + " desc " + " limit 3";
+                + MyDBContract.People.COLUMN_NAME_TOTALPOINTS + " , " + MyDBContract.People.COLUMN_NAME_IMAGE +
+                " from " + MyDBContract.People.TABLE_NAME + " order by " + MyDBContract.People.COLUMN_NAME_TOTALPOINTS + " desc " + " limit " + max;
         Cursor cursor = this.myDatabase.rawQuery(sql,null);
         if (cursor.moveToFirst()) {
             do {
@@ -243,7 +245,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
                         cursor.getInt(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_ID)),
                         cursor.getString(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_NAME)),
                         cursor.getString(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_SURNAME)),
-                        cursor.getInt(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_POINTS)),
+                        cursor.getInt(cursor.getColumnIndex(MyDBContract.People.COLUMN_NAME_TOTALPOINTS)),
                         BitmapFactory.decodeByteArray(myImgByte, 0, myImgByte.length)
                 ));
             } while (cursor.moveToNext());
@@ -319,8 +321,10 @@ public class MyDBHelper extends SQLiteOpenHelper {
         cv.put(MyDBContract.People.COLUMN_NAME_SURNAME, surname);
         cv.put(MyDBContract.People.COLUMN_NAME_POINTS, 0);
         cv.put(MyDBContract.People.COLUMN_NAME_IMAGE, byteimg);
+        cv.put(MyDBContract.People.COLUMN_NAME_TOTALPOINTS, 0);
         this.myDatabase.insert(MyDBContract.People.TABLE_NAME, null, cv);
         this.close();
     }
+
 }
 

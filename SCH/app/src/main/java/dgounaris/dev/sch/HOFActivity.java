@@ -14,7 +14,7 @@ public class HOFActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hof);
         MyDBHelper databaseHelper = new MyDBHelper(getApplicationContext());
-        HallofFameAdapter hofadapter = new HallofFameAdapter(this, databaseHelper.top_5());
+        HallofFameAdapter hofadapter = new HallofFameAdapter(this, databaseHelper.getTopByPoints(5));
         ListView hofList = (ListView) findViewById(R.id.hof_list);
         hofList.setAdapter(hofadapter);
     }
