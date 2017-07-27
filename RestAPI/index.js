@@ -7,6 +7,7 @@ var fs = require('fs');
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./schdb.db');
 var crypto = require('crypto');
+var passwordHash = require('password-hash');
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -19,13 +20,34 @@ app.use(bodyParser.json());
 
 var defaultpic = "profile_default.png";
 
-app.get('/login/:user/:pass', function(req, res) {
+app.post('/login', function(req, res) {
     //BODY KEY NAMES
     //username: username
     //password: password
-    db.all("select c_Id from Credentials where c_Username = ? and c_Password = ?", [req.body.username, req.body.password], function(err, rows) {
+    db.all("select c_Password from Credentials where c_Username = ?", [req.body.username], function(err, rows) {
         if (err) res.status(500).end();
-        sendResponse(rows, res);
+        var dbdata = splitJSONObject(rows[0]);
+        var storedPw = dbdata[0].substr(1, dbdata[0].length - 2);
+        if (passwordHash.verify(req.body.password, storedPw)) {
+            db.all("select c_Id from Credentials where c_Username = ? and c_Password = ?", [req.body.username, storedPw], function(err, rows) {
+                res.status(202);
+                sendResponse(rows, res);
+            });
+        }
+        else {
+            res.status(401).end();
+        }
+    });
+});
+
+app.post('/people/newpass', function(req, res) {
+    //BODY KEY NAMES
+    //username: username
+    //password: password
+    var hashedPw = passwordHash.generate(req.body.password);
+    db.run("update Credentials set c_Password = ? where c_Username = ?", [hashedPw, req.body.username], function(err, rows) {
+        if (err) throw err;
+        res.status(202).end();
     });
 });
 
@@ -114,8 +136,9 @@ app.post('/people/register', function(req, res) {
     //surname key: surname
     //image is to be uploaded seperately
     var id = crypto.randomBytes(20).toString('hex'); //generating random id
+    var hashedPw = passwordHash.generate(req.body.password); //hashing password before sending to db
     db.serialize(function() {
-        db.run("insert into Credentials values(?,?,?)", [id, req.body.username, req.body.password], function(err, rows) {
+        db.run("insert into Credentials values(?,?,?)", [id, req.body.username, hashedPw], function(err, rows) {
             if (err) throw err;
         });
         db.run("insert into People values(?,?,?,?,?,?)", [id, req.body.name, req.body.surname, 0, defaultpic, 0], function(err, rows) {
