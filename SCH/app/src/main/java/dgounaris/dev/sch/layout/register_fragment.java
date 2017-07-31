@@ -19,19 +19,35 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
+import cz.msebera.android.httpclient.Header;
+import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
+import dgounaris.dev.sch.Trophies.Trophy;
+
+import static android.R.attr.bitmap;
 
 /**
  * Created by DimitrisLPC on 20/5/2017.
@@ -51,7 +67,6 @@ public class register_fragment extends Fragment {
     Button registerbtn;
     Bitmap profileimageselected;
     ImageView photochosen;
-    MyDBHelper databaseHelper;
 
     public register_fragment() {
         // Required empty public constructor
@@ -65,7 +80,6 @@ public class register_fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        databaseHelper = new MyDBHelper(getContext());
     }
 
     @Override
@@ -91,26 +105,77 @@ public class register_fragment extends Fragment {
         registerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!username.getText().toString().equals("") && !password.getText().toString().equals("") && !password_reenter.getText().toString().equals("") && !name.getText().toString().equals("") && !surname.getText().toString().equals("")) {
-                    if (databaseHelper.checkForUniqueUsername(username.getText().toString())) {
-                        if (checkPasswordEntries(password.getText().toString(), password_reenter.getText().toString())) {
-                            databaseHelper.registerAccount(username.getText().toString(), password.getText().toString(), name.getText().toString(), surname.getText().toString(), profileimageselected);
-                            int id = databaseHelper.checkCredentials(username.getText().toString(), password.getText().toString());
-                            Person person = databaseHelper.getPerson(id);
-                            Intent intent = new Intent(getActivity(), MainActivity.class);
-                            intent.putExtra("activeperson", person);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(getContext(), "Error: Password entries do not match", Toast.LENGTH_SHORT).show();
+                if (!password.getText().toString().equals(password_reenter.getText().toString())) {
+                    Toast.makeText(getContext(), "The passwords do not match.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                RequestParams rp = new RequestParams();
+                rp.put("username", username.getText().toString()); rp.put("password", password.getText().toString());
+                rp.put("name", name.getText().toString()); rp.put("surname", surname.getText().toString());
+                try {
+                    File imgFile = File.createTempFile(System.currentTimeMillis() + "", ".png", getContext().getCacheDir());
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(imgFile));
+                    profileimageselected.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    os.flush();
+                    os.close();
+                    //todo
+                    //For some reason the line below, when uncommented, summons an application demon that renders all parameters in rp undefined when passed to server. Funny shit...
+                    //rp.put("image", imgFile);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                APIHelper.post("/person/register", rp, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                        for (int i=0;i<response.length();i++) {
+                            try {
+                                JSONObject json = response.getJSONObject(i);
+                                onUserRegistered(json.getString("c_Id"));
+                            } catch (JSONException e) {
+                                Toast.makeText(getContext(), "Something went wrong. Try again later", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
-                    else {
-                        Toast.makeText(getContext(), "Error: Username already in use", Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        if (statusCode >= 500) {
+                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (statusCode >= 400) {
+                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     }
-                }
-                else {
-                    Toast.makeText(getContext(), "Error: All fields are mandatory", Toast.LENGTH_SHORT).show();
-                }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        if (statusCode >= 500) {
+                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (statusCode >= 400) {
+                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        if (statusCode >= 500) {
+                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (statusCode >= 400) {
+                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                });
+
             }
         });
         return view;
@@ -152,23 +217,16 @@ public class register_fragment extends Fragment {
 
     public Bitmap onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-        byte[] byteArray = bytes.toByteArray();
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
-
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
+        /*try {
+            File destination = File.createTempFile(System.currentTimeMillis() + ".png", null, getContext().getCacheDir());
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(destination));
+            thumbnail.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return thumbnail;
     }
@@ -195,10 +253,99 @@ public class register_fragment extends Fragment {
         }
     }
 
-    private boolean checkPasswordEntries(String password, String reenter) {
-        if (password.equals(""))
-            return false;
-        return password.equals(reenter);
+    private void onUserRegistered(final String id) {
+        RequestParams rp = new RequestParams();
+        rp.add("id", id);
+        APIHelper.get("/person/" + id + "/details", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                if (statusCode==204) {
+                    Toast.makeText(getContext(), "Bad reply from server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                for (int i=0;i<response.length(); i++) {
+                    try {
+                        final JSONObject json = response.getJSONObject(i);
+                        JSONArray trophies = json.getJSONArray("p_Trophies");
+                        final ArrayList<Trophy> myTrophies = new ArrayList<Trophy>();
+                        for (int j=0;j<trophies.length(); j++) {
+                            final JSONObject jsonTrophy = trophies.getJSONObject(j);
+                            APIHelper.get("/trophy/" + jsonTrophy.getString("t_Id") + "/image", null, new FileAsyncHttpResponseHandler(getContext()) {
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
+                                    //todo get default trophy icon and still create trophy
+                                }
+
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, File file) {
+                                    String filePath = file.getPath();
+                                    Bitmap myImg = BitmapFactory.decodeFile(filePath);
+                                    try {
+                                        myTrophies.add(new Trophy(
+                                                jsonTrophy.getString("t_Id"),
+                                                jsonTrophy.getString("t_Name"),
+                                                jsonTrophy.getString("t_Description"),
+                                                myImg
+                                        ));
+                                    } catch (JSONException e) {
+
+                                    }
+                                }
+                            });
+                        }
+                        APIHelper.get("/person/" + id + "/image", null, new FileAsyncHttpResponseHandler(getContext()) {
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
+                                //todo get default picture and still call onPersonFetched after
+                            }
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, File file) {
+                                String filePath = file.getPath();
+                                Bitmap myImg = BitmapFactory.decodeFile(filePath);
+                                try {
+                                    onPersonFetched(id, json.getString("p_Name"), json.getString("p_Surname"), json.getInt("p_Points"), json.getInt("p_TotalPoints"), myImg, myTrophies);
+                                } catch (JSONException e) {
+                                    Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } catch (JSONException e) {
+                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void onPersonFetched(String id, String name, String surname, int points, int totalPoints, Bitmap img, ArrayList<Trophy> myTrophies) {
+        Person person = new Person(
+                id,
+                name,
+                surname,
+                points,
+                totalPoints,
+                img,
+                myTrophies
+        );
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra("activeperson", person);
+        startActivity(intent);
     }
 
 }

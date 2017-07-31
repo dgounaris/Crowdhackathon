@@ -34,7 +34,7 @@ public class HallofFameAdapter extends ArrayAdapter<Person>{
         TextView name = (TextView) listItemView.findViewById(R.id.hof_name);
         name.setText(getItem(position).getName() + " " + getItem(position).getSurname());
         TextView points = (TextView) listItemView.findViewById(R.id.hof_points);
-        points.setText(getItem(position).getPoints()+"");
+        points.setText(getItem(position).getTotalPoints()+"");
 
         return listItemView;
     }

@@ -14,19 +14,19 @@ import dgounaris.dev.sch.Utils.SerializableImage;
  */
 
 public class Trophy implements Serializable {
-    private int id;
+    private String id;
     private String title;
     private String description;
     private SerializableImage image = new SerializableImage();
 
-    public Trophy(int id, String t, String d, Bitmap img) {
+    public Trophy(String id, String t, String d, Bitmap img) {
         this.id = id;
         title = t;
         description = d;
         image.setImage(img);
     }
 
-    public int getId() { return id; }
+    public String getId() { return id; }
 
     public String getTitle() {
         return title;

@@ -1,10 +1,26 @@
 package dgounaris.dev.sch.People;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Debug;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.Header;
+import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.Utils.SerializableImage;
 import dgounaris.dev.sch.Trophies.Trophy;
 
@@ -14,18 +30,29 @@ import dgounaris.dev.sch.Trophies.Trophy;
 
 public class Person implements Serializable {
 
-    private int id;
+    private String id;
     private String name;
     private String surname;
     private SerializableImage mImage = new SerializableImage();
     private int points;
+    private int totalPoints;
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
-    public Person(int id, String name, String surname, int points, Bitmap profileImg) {
+    public Person(String id, String name, String surname, int points, int totalPoints) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.points = points;
+        this.totalPoints = totalPoints;
+    }
+
+    public Person(String id, String name, String surname, int points, int totalPoints, Bitmap profileImg, ArrayList<Trophy> trophies) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.points = points;
+        this.totalPoints = totalPoints;
+        this.myTrophies = trophies;
         mImage.setImage(profileImg);
     }
 
@@ -39,7 +66,7 @@ public class Person implements Serializable {
         return true;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -59,8 +86,8 @@ public class Person implements Serializable {
         return points;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getTotalPoints() {
+        return totalPoints;
     }
 
     public void setName(String name) {
@@ -71,7 +98,7 @@ public class Person implements Serializable {
         this.surname = surname;
     }
 
-    public void setmImage(SerializableImage mImage) {
+    public void setImage(SerializableImage mImage) {
         this.mImage = mImage;
     }
 
@@ -86,4 +113,5 @@ public class Person implements Serializable {
     public ArrayList<Trophy> getTrophies() {
         return this.myTrophies;
     }
+
 }

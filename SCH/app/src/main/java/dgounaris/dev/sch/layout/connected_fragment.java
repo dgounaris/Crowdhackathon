@@ -23,13 +23,22 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import cz.msebera.android.httpclient.Header;
+import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
@@ -104,11 +113,9 @@ public class connected_fragment extends Fragment {
         progress_bar.setVisibility(View.VISIBLE);
         points_text.setVisibility(View.INVISIBLE);
         points_raw_text.setVisibility(View.INVISIBLE);
-
+        //onConnectionEstablished();
         Intent intent = new Intent(getActivity(), bluetooth_devicesActivity.class);
         startActivity(intent);
-
-
     }
 
     private void onConnectionEstablished() {
@@ -137,6 +144,57 @@ public class connected_fragment extends Fragment {
     }
 
     private void addPoints(int points_added) {
+        RequestParams rp = new RequestParams();
+        rp.add("id", activeperson.getId()); rp.add("points", ((Integer)points_added).toString());
+        APIHelper.post("/person/addpoints", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                for (int i=0;i<response.length();i++) {
+                    try {
+                        JSONObject json = response.getJSONObject(i);
+                        activeperson.setPoints(json.getInt("p_Points"));
+                    } catch (JSONException e) {
+                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                if (statusCode >= 500) {
+                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (statusCode == 400) {
+                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (statusCode >= 500) {
+                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (statusCode >= 400) {
+                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (statusCode >= 500) {
+                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (statusCode >= 400) {
+                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
         ValueAnimator animator = ValueAnimator.ofInt(activeperson.getPoints(), activeperson.getPoints() + points_added);
         animator.setDuration(1000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -146,8 +204,9 @@ public class connected_fragment extends Fragment {
         });
         animator.start();
         activeperson.setPoints(activeperson.getPoints() + points_added);
-        ((MainActivity) getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
+
+
 
 
 }

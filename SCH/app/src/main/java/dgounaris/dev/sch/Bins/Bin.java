@@ -8,18 +8,18 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Bin {
 
-    private int index;
+    private String id;
     private LatLng latlong;
     private boolean hasSpace;
 
-    public Bin(int index, LatLng latlong, boolean hasSpace) {
-        this.index = index;
+    public Bin(String id, LatLng latlong, boolean hasSpace) {
+        this.id = id;
         this.latlong = latlong;
         this.hasSpace = hasSpace;
     }
 
-    public int getIndex() {
-        return index;
+    public String getId() {
+        return id;
     }
 
     public LatLng getLatlong() {
@@ -28,10 +28,6 @@ public class Bin {
 
     public boolean isHasSpace() {
         return hasSpace;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
     }
 
     public void setLatlong(LatLng latlong) {

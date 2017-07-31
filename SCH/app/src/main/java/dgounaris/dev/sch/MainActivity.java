@@ -13,7 +13,6 @@ import com.google.android.gms.maps.GoogleMap;
 import java.util.ArrayList;
 
 import dgounaris.dev.sch.Bins.Bin;
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.layout.home_fragment;
@@ -23,7 +22,6 @@ import dgounaris.dev.sch.layout.profile_fragment;
 public class MainActivity extends AppCompatActivity {
 
     Person activeperson = null;
-    MyDBHelper databaseHelper;
     BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -59,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        databaseHelper = new MyDBHelper(getApplicationContext());
         activeperson = (Person) getIntent().getSerializableExtra("activeperson");
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -72,22 +69,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.framelayout, default_fragment);
         transaction.commit();
-    }
-
-    public ArrayList<Service> getAvailableServices() {
-        return databaseHelper.getServices();
-    }
-
-    public int onRedeemPoints(int serviceId, int pointsNeeded) {
-        return databaseHelper.redeemService(serviceId, pointsNeeded, this.activeperson.getId());
-    }
-
-    public void onAddPoints(int person_id, int pointsAdded) {
-        this.databaseHelper.set_balance(pointsAdded, person_id);
-    }
-
-    public ArrayList<Bin> getAllBins() {
-        return databaseHelper.getBins();
     }
 
     @Override

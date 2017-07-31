@@ -38,8 +38,6 @@ public class TrophyAdapter extends ArrayAdapter<Trophy> {
         else
             image.setVisibility(View.GONE);
 
-        MyDBHelper dbHelper = new MyDBHelper(getContext());
-
         TextView miwok = (TextView) listItemView.findViewById(R.id.title);
         miwok.setText(current_word.getTitle());
 
