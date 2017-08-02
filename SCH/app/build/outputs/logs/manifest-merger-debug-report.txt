@@ -1,0 +1,176 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:2:1-46:12
+	package
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:3:5-32
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+uses-feature#0x00020000
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:5:5-7:35
+MERGED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:21:5-77
+	android:glEsVersion
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:6:9-41
+	android:required
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:7:9-32
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:9:5-67
+MERGED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:20:5-66
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:9:22-64
+uses-permission#com.google.android.providers.gsf.permission.READ_GSERVICES
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:10:5-98
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:10:22-95
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:11:5-81
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:11:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:12:22-76
+uses-permission#android.permission.BLUETOOTH
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:13:5-68
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:13:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:14:5-74
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:14:22-71
+application
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:16:5-44:19
+MERGED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:appcompat-v7:25.3.1] C:\Users\Rhogarj\.android\build-cache\840bd1d49343f916502ac37b0dab645274af3f12\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\4e3325a90cee3f3b3a6c189e11fb8012086665ec\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:transition:25.3.1] C:\Users\Rhogarj\.android\build-cache\7de506ddb4b541618fde8e6efcd4526fa19c17f2\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\9cff98aa45c8fc3acbb7894742315d7e42621096\output\AndroidManifest.xml:26:5-20
+MERGED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:24:5-19
+MERGED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:18:5-20:19
+MERGED from [com.google.android.gms:play-services-tasks:10.2.1] C:\Users\Rhogarj\.android\build-cache\b179e3e7b6ffde1afa220e237a665608c3e02335\output\AndroidManifest.xml:4:5-19
+MERGED from [com.google.android.gms:play-services-basement:10.2.1] C:\Users\Rhogarj\.android\build-cache\685ed4ab975bc81e3987a4f4268b9e7c7c8cb9d6\output\AndroidManifest.xml:19:5-21:19
+MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Rhogarj\.android\build-cache\4457064bbb9163cba3b63835b8ff0b67b8022ccb\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Rhogarj\.android\build-cache\3d9fb0dfcf7cc5a6e01e100bc0b7b09bd32c0027\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\f9c44d6cea871c9cc52a929b3cc04497752c09b6\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Rhogarj\.android\build-cache\1a0f62680e71ef3d68f39b0688803b52409c7069\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Rhogarj\.android\build-cache\6a334ff9f776df521b8e46e45280587dbb19f1ea\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\6071cd8dcbb44eea6e01f1e3f12ce8f8516cf5d5\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Rhogarj\.android\build-cache\930761d87e281d13c2ac7c87a794cb157759c35c\output\AndroidManifest.xml:9:5-20
+	android:label
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:19:9-41
+	android:supportsRtl
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:21:9-35
+	android:roundIcon
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:20:9-54
+	android:allowBackup
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:17:9-35
+	android:icon
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:18:9-43
+	android:theme
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:22:9-40
+activity#dgounaris.dev.sch.MainActivity
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:23:9-26:61
+	android:screenOrientation
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:26:13-49
+	android:label
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:25:13-45
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:24:13-41
+meta-data#com.google.android.geo.API_KEY
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:28:9-30:71
+	android:value
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:30:13-68
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:29:13-58
+meta-data#com.google.android.gms.version
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:31:9-33:69
+MERGED from [com.google.android.gms:play-services-basement:10.2.1] C:\Users\Rhogarj\.android\build-cache\685ed4ab975bc81e3987a4f4268b9e7c7c8cb9d6\output\AndroidManifest.xml:20:9-121
+	android:value
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:33:13-66
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:32:13-58
+activity#dgounaris.dev.sch.HOFActivity
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:35:9-49
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:35:19-46
+activity#dgounaris.dev.sch.LoginActivity
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:36:9-42:20
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:36:19-48
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:37:13-41:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:38:17-69
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:38:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:40:17-77
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:40:27-74
+activity#dgounaris.dev.sch.bluetooth_devicesActivity
+ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:43:9-72
+	android:name
+		ADDED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml:43:19-60
+uses-sdk
+INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:appcompat-v7:25.3.1] C:\Users\Rhogarj\.android\build-cache\840bd1d49343f916502ac37b0dab645274af3f12\output\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\4e3325a90cee3f3b3a6c189e11fb8012086665ec\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:25.3.1] C:\Users\Rhogarj\.android\build-cache\cb2e73342d36a3bab6b39862233c8db9c1549e46\output\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:transition:25.3.1] C:\Users\Rhogarj\.android\build-cache\7de506ddb4b541618fde8e6efcd4526fa19c17f2\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\9cff98aa45c8fc3acbb7894742315d7e42621096\output\AndroidManifest.xml:20:5-43
+MERGED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:23:5-43
+MERGED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:17:5-43
+MERGED from [com.google.android.gms:play-services-tasks:10.2.1] C:\Users\Rhogarj\.android\build-cache\b179e3e7b6ffde1afa220e237a665608c3e02335\output\AndroidManifest.xml:3:5-43
+MERGED from [com.google.android.gms:play-services-basement:10.2.1] C:\Users\Rhogarj\.android\build-cache\685ed4ab975bc81e3987a4f4268b9e7c7c8cb9d6\output\AndroidManifest.xml:17:5-43
+MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Rhogarj\.android\build-cache\4457064bbb9163cba3b63835b8ff0b67b8022ccb\output\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Rhogarj\.android\build-cache\3d9fb0dfcf7cc5a6e01e100bc0b7b09bd32c0027\output\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\f9c44d6cea871c9cc52a929b3cc04497752c09b6\output\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Rhogarj\.android\build-cache\1a0f62680e71ef3d68f39b0688803b52409c7069\output\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Rhogarj\.android\build-cache\6a334ff9f776df521b8e46e45280587dbb19f1ea\output\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\6071cd8dcbb44eea6e01f1e3f12ce8f8516cf5d5\output\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Rhogarj\.android\build-cache\930761d87e281d13c2ac7c87a794cb157759c35c\output\AndroidManifest.xml:5:5-7:41
+	tools:overrideLibrary
+		ADDED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:23:9-59
+	android:targetSdkVersion
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\SCH\app\src\main\AndroidManifest.xml
+meta-data#android.support.VERSION
+ADDED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:appcompat-v7:25.3.1] C:\Users\Rhogarj\.android\build-cache\840bd1d49343f916502ac37b0dab645274af3f12\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\4e3325a90cee3f3b3a6c189e11fb8012086665ec\output\AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:recyclerview-v7:25.3.1] C:\Users\Rhogarj\.android\build-cache\cb2e73342d36a3bab6b39862233c8db9c1549e46\output\AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:transition:25.3.1] C:\Users\Rhogarj\.android\build-cache\7de506ddb4b541618fde8e6efcd4526fa19c17f2\output\AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Rhogarj\.android\build-cache\9cff98aa45c8fc3acbb7894742315d7e42621096\output\AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Rhogarj\.android\build-cache\4457064bbb9163cba3b63835b8ff0b67b8022ccb\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Rhogarj\.android\build-cache\3d9fb0dfcf7cc5a6e01e100bc0b7b09bd32c0027\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\f9c44d6cea871c9cc52a929b3cc04497752c09b6\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Rhogarj\.android\build-cache\1a0f62680e71ef3d68f39b0688803b52409c7069\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Rhogarj\.android\build-cache\6a334ff9f776df521b8e46e45280587dbb19f1ea\output\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Rhogarj\.android\build-cache\6071cd8dcbb44eea6e01f1e3f12ce8f8516cf5d5\output\AndroidManifest.xml:25:5-27:34
+	android:value
+		ADDED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:27:9-31
+	android:name
+		ADDED from [com.android.support:design:25.3.1] C:\Users\Rhogarj\.android\build-cache\6715104ff535f4ef8992148679dc2ad437799804\output\AndroidManifest.xml:26:9-47
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:19:5-78
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:10.2.1] C:\Users\Rhogarj\.android\build-cache\58924c145ff6146e15331602ce5565b58bcdca82\output\AndroidManifest.xml:19:22-76
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:19:9-172
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:19:146-170
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:19:86-145
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:10.2.1] C:\Users\Rhogarj\.android\build-cache\18ca595ec86699bd838109f4ebb2579391d3a8d5\output\AndroidManifest.xml:19:19-85
