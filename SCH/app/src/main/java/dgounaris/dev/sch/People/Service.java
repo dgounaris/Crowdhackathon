@@ -1,14 +1,20 @@
 package dgounaris.dev.sch.People;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by DimitrisLPC on 13/5/2017.
  */
 
 public class Service {
 
+    @SerializedName("id")
     private String id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("slots")
     private int slots;
+    @SerializedName("points_needed")
     private int points_needed;
 
     public Service(String id, String name, int slots, int points_needed) {

@@ -2,6 +2,8 @@ package dgounaris.dev.sch.Trophies;
 
 import android.graphics.Bitmap;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -14,8 +16,11 @@ import dgounaris.dev.sch.Utils.SerializableImage;
  */
 
 public class Trophy implements Serializable {
+    @SerializedName("id")
     private String id;
+    @SerializedName("title")
     private String title;
+    @SerializedName("description")
     private String description;
     private SerializableImage image = new SerializableImage();
 

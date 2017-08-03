@@ -7,6 +7,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.annotations.SerializedName;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -30,12 +31,18 @@ import dgounaris.dev.sch.Trophies.Trophy;
 
 public class Person implements Serializable {
 
+    @SerializedName("id")
     private String id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("surname")
     private String surname;
     private SerializableImage mImage = new SerializableImage();
+    @SerializedName("points")
     private int points;
+    @SerializedName("totalpoints")
     private int totalPoints;
+    @SerializedName("trophies")
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
     public Person(String id, String name, String surname, int points, int totalPoints) {
