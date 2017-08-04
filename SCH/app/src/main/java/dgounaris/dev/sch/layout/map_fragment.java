@@ -1,5 +1,6 @@
 package dgounaris.dev.sch.layout;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -97,8 +98,15 @@ public class map_fragment extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 List<Bin> myBins = response.body();
-                for (int i=0;i<myBins.size();i++) {
-                    map.addMarker(new MarkerOptions().position(myBins.get(i).getLatlong()).title("Bin").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                for (int i=0;i<myBins.size();i++) { //add marker for all bins, red if it's full, green otherwise
+                    float markerColor;
+                    if (myBins.get(i).hasSpace()) {
+                        markerColor = BitmapDescriptorFactory.HUE_GREEN;
+                    }
+                    else {
+                        markerColor = BitmapDescriptorFactory.HUE_RED;
+                    }
+                    map.addMarker(new MarkerOptions().position(myBins.get(i).getLatlong()).title("Bin").icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
                 }
             }
 

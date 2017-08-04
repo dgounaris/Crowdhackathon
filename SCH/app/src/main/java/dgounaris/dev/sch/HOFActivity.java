@@ -6,18 +6,22 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import dgounaris.dev.sch.APIHandler.APIHelper;
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.adapter.HallofFameAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HOFActivity extends AppCompatActivity {
 
@@ -29,66 +33,29 @@ public class HOFActivity extends AppCompatActivity {
     }
 
     private void TopTotalPoints(int max) {
-        final ArrayList<Person> myPeople = new ArrayList<>();
-        APIHelper.get("/people/toppoints/" + ((Integer)max).toString(), null, new JsonHttpResponseHandler() {
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Call<List<Person>> peopleCall = apiService.getTopByTotalPoints(max);
+        peopleCall.enqueue(new Callback<List<Person>>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject json = response.getJSONObject(i);
-                        myPeople.add(new Person(
-                                json.getLong("p_Id"),
-                                json.getString("p_Name"),
-                                json.getString("p_Surname"),
-                                json.getInt("p_Points"),
-                                json.getInt("p_TotalPoints")
-                        ));
-                    } catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-                    }
+            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
+                if (response.code()>=500) {
+                    Toast.makeText(getApplicationContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                HallofFameAdapter hofadapter = new HallofFameAdapter(getApplicationContext(), myPeople);
+                if (response.code()>=400) {
+                    Toast.makeText(getApplicationContext(), "Error: Bad input provided", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<Person> people = response.body();
+                HallofFameAdapter hofadapter = new HallofFameAdapter(getApplicationContext(), (ArrayList<Person>)people);
                 ListView hofList = (ListView) findViewById(R.id.hof_list);
                 hofList.setAdapter(hofadapter);
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                if (statusCode >= 500) {
-                    Toast.makeText(getApplicationContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode == 401) {
-                    Toast.makeText(getApplicationContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            public void onFailure(Call<List<Person>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (statusCode >= 500) {
-                    Toast.makeText(getApplicationContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode == 401) {
-                    Toast.makeText(getApplicationContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (statusCode >= 500) {
-                    Toast.makeText(getApplicationContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode == 401) {
-                    Toast.makeText(getApplicationContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-
         });
     }
 

@@ -16,11 +16,11 @@ import dgounaris.dev.sch.Utils.SerializableImage;
  */
 
 public class Trophy implements Serializable {
-    @SerializedName("id")
+    @SerializedName("Id")
     private long id;
-    @SerializedName("title")
+    @SerializedName("Name")
     private String title;
-    @SerializedName("description")
+    @SerializedName("Description")
     private String description;
     private SerializableImage image = new SerializableImage();
 

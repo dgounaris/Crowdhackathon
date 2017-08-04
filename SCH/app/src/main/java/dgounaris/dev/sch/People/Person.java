@@ -31,18 +31,18 @@ import dgounaris.dev.sch.Trophies.Trophy;
 
 public class Person implements Serializable {
 
-    @SerializedName("id")
+    @SerializedName("Id")
     private long id;
-    @SerializedName("name")
+    @SerializedName("Name")
     private String name;
-    @SerializedName("surname")
+    @SerializedName("Surname")
     private String surname;
     private SerializableImage mImage = new SerializableImage();
-    @SerializedName("points")
+    @SerializedName("Points")
     private int points;
-    @SerializedName("totalpoints")
+    @SerializedName("TotalPoints")
     private int totalPoints;
-    @SerializedName("trophies")
+    @SerializedName("Trophies")
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
     public Person(long id, String name, String surname, int points, int totalPoints) {

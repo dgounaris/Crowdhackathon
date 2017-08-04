@@ -8,13 +8,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class Service {
 
-    @SerializedName("id")
+    @SerializedName("Id")
     private long id;
-    @SerializedName("name")
+    @SerializedName("Name")
     private String name;
-    @SerializedName("slots")
+    @SerializedName("EmptySlots")
     private int slots;
-    @SerializedName("points_needed")
+    @SerializedName("Points")
     private int points_needed;
 
     public Service(long id, String name, int slots, int points_needed) {

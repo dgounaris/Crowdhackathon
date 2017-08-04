@@ -36,27 +36,25 @@ public interface ApiInterface {
     //get person details if exists otherwise empty
     @GET("/person/{id}/details")
     Call<Person> personDetails(
-            @Path("id") String id
+            @Path("id") long id
     );
 
     //add points to person, returns person points after transaction
     @POST("/person/addpoints")
     Call<Integer> addPoints(
-            @Field("id") String id,
+            @Field("id") long id,
             @Field("points") int points
     );
 
-    //get available services for city provided
-    @GET("/services/available/{cityid}") //CHANGED BECAUSE WE NEED THE TOWN
-    Call<List<Service>> availableServices(
-            @Path("cityid") String id
-    );
+    //get available services
+    @GET("/services/available") //todo CHANGE THIS TO FILTER BY TOWN
+    Call<List<Service>> availableServices();
 
     //redeem a service, returns person points after transaction
     @POST("/services/redeem")
     Call<Integer> redeemService(
-            @Field("personid") String personId,
-            @Field("serviceid") String serviceId
+            @Field("personid") long personId,
+            @Field("serviceid") long serviceId
     );
 
     //gets all the bins in database

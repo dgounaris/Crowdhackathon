@@ -22,14 +22,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import dgounaris.dev.sch.APIHandler.APIHelper;
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.HOFActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.adapter.ServiceAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class profile_fragment extends Fragment {
 
@@ -112,6 +118,42 @@ public class profile_fragment extends Fragment {
 
     public void showServices() {
         final ArrayList<Service> services = new ArrayList<>();
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Call<List<Service>> serviceCall = apiService.availableServices();
+        serviceCall.enqueue(new Callback<List<Service>>() {
+            @Override
+            public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
+                if (response.code()>=500) {
+                    Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (response.code()==204) {
+                    Toast.makeText(getContext(), "Sorry, no available redeeming options.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<Service> services = response.body();
+                Dialog myDialog = new Dialog(getActivity());
+                myDialog.setContentView(R.layout.redeem_view);
+                final ListView serviceList = (ListView) myDialog.findViewById(R.id.service_list);
+                serviceList.setAdapter(new ServiceAdapter(getContext(), (ArrayList<Service>)services, getParentFragment(), activeperson));
+                myDialog.setCancelable(true);
+                myDialog.setTitle("ListView");
+                myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        //refresh points
+                        TextView balance = (TextView) getView().findViewById(R.id.balance);
+                        balance.setText(activeperson.getPoints() + " points");
+                    }
+                });
+                myDialog.show();
+            }
+
+            @Override
+            public void onFailure(Call<List<Service>> call, Throwable t) {
+                Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
         APIHelper.get("/services/available", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {

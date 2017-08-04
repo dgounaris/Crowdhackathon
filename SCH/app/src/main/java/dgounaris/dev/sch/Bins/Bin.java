@@ -33,7 +33,7 @@ public class Bin {
         return new LatLng(Lat, Long);
     }
 
-    public boolean isHasSpace() {
+    public boolean hasSpace() {
         return hasSpace;
     }
 
