@@ -208,9 +208,11 @@ app.post('/person/register', function(req, res) {
 
 app.get('/services/available', function(req, res) {
     console.log("Getting available services...");
-    db.all("select * from Services where s_EmptySlots > 0 order by s_Points desc", function(err, rows) {
-        if (err) return res.status(500).end();
-        sendResponse(rows, res);
+    con.connect(function(err) {
+        console.log("Connected!");
+        con.query("select * from Services where Empty_Slots > 0 order by Points_Required desc", function (err, result) {
+            sendResponse(result,res);
+        });
     });
 });
 
