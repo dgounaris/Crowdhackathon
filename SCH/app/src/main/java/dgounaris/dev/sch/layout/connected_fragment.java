@@ -22,7 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
+import dgounaris.dev.sch.BluetoothConnectThread;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
@@ -121,7 +123,11 @@ public class connected_fragment extends Fragment {
                         ((ViewGroup) bluetooth_list.getParent()).removeView(bluetooth_list);
                         onConnectionSeeking();
 
-
+                        BluetoothConnectThread thread = new BluetoothConnectThread();
+                        if (thread.connect(device_clicked, UUID.randomUUID())) {
+                            connection_status.setText("Succesfully Connected to device: " + device_clicked.getName());
+                            progress_bar.setVisibility(View.INVISIBLE);
+                        }
                     }
                 });
 
