@@ -119,7 +119,7 @@ public class profile_fragment extends Fragment {
                     try {
                         JSONObject json = response.getJSONObject(i);
                         services.add(new Service(
-                                json.getString("s_Id"),
+                                json.getLong("s_Id"),
                                 json.getString("s_Name"),
                                 json.getInt("s_EmptySlots"),
                                 json.getInt("s_Points")

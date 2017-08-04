@@ -61,7 +61,7 @@ public class ServiceAdapter extends ArrayAdapter<Service> {
             @Override
             public void onClick(View v) {
                 RequestParams rp = new RequestParams();
-                rp.add("personid", activePerson.getId()); rp.add("serviceid", current_service.getId());
+                rp.add("personid", ((Long)activePerson.getId()).toString()); rp.add("serviceid", ((Long)current_service.getId()).toString());
                 APIHelper.post("/services/redeem", rp, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {

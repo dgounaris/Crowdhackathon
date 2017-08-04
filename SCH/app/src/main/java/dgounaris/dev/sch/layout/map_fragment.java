@@ -85,7 +85,7 @@ public class map_fragment extends Fragment implements OnMapReadyCallback {
                     try {
                         JSONObject json = response.getJSONObject(i);
                         myBins.add(new Bin(
-                                json.getString("b_Id"),
+                                json.getLong("b_Id"),
                                 new LatLng(json.getDouble("b_Lat"), json.getDouble("b_Long")),
                                 json.getInt("b_Space") == 1
                         ));

@@ -145,7 +145,7 @@ public class connected_fragment extends Fragment {
 
     private void addPoints(int points_added) {
         RequestParams rp = new RequestParams();
-        rp.add("id", activeperson.getId()); rp.add("points", ((Integer)points_added).toString());
+        rp.add("id", ((Long)activeperson.getId()).toString()); rp.add("points", ((Integer)points_added).toString());
         APIHelper.post("/person/addpoints", rp, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {

@@ -17,21 +17,21 @@ import dgounaris.dev.sch.Utils.SerializableImage;
 
 public class Trophy implements Serializable {
     @SerializedName("id")
-    private String id;
+    private long id;
     @SerializedName("title")
     private String title;
     @SerializedName("description")
     private String description;
     private SerializableImage image = new SerializableImage();
 
-    public Trophy(String id, String t, String d, Bitmap img) {
+    public Trophy(long id, String t, String d, Bitmap img) {
         this.id = id;
         title = t;
         description = d;
         image.setImage(img);
     }
 
-    public String getId() { return id; }
+    public long getId() { return id; }
 
     public String getTitle() {
         return title;

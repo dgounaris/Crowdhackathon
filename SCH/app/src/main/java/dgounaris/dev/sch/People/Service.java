@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class Service {
 
     @SerializedName("id")
-    private String id;
+    private long id;
     @SerializedName("name")
     private String name;
     @SerializedName("slots")
@@ -17,7 +17,7 @@ public class Service {
     @SerializedName("points_needed")
     private int points_needed;
 
-    public Service(String id, String name, int slots, int points_needed) {
+    public Service(long id, String name, int slots, int points_needed) {
         this.id = id;
         this.name = name;
         this.slots = slots;
@@ -48,7 +48,7 @@ public class Service {
         return points_needed;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 }

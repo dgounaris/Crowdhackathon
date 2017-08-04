@@ -37,7 +37,7 @@ public class HOFActivity extends AppCompatActivity {
                     try {
                         JSONObject json = response.getJSONObject(i);
                         myPeople.add(new Person(
-                                json.getString("p_Id"),
+                                json.getLong("p_Id"),
                                 json.getString("p_Name"),
                                 json.getString("p_Surname"),
                                 json.getInt("p_Points"),

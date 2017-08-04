@@ -10,19 +10,19 @@ import com.google.gson.annotations.SerializedName;
 public class Bin {
 
     @SerializedName("id")
-    private String id;
+    private long id;
     @SerializedName("latlong")
     private LatLng latlong;
     @SerializedName("hasSpace")
     private boolean hasSpace;
 
-    public Bin(String id, LatLng latlong, boolean hasSpace) {
+    public Bin(long id, LatLng latlong, boolean hasSpace) {
         this.id = id;
         this.latlong = latlong;
         this.hasSpace = hasSpace;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 

@@ -32,7 +32,7 @@ import dgounaris.dev.sch.Trophies.Trophy;
 public class Person implements Serializable {
 
     @SerializedName("id")
-    private String id;
+    private long id;
     @SerializedName("name")
     private String name;
     @SerializedName("surname")
@@ -45,7 +45,7 @@ public class Person implements Serializable {
     @SerializedName("trophies")
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
-    public Person(String id, String name, String surname, int points, int totalPoints) {
+    public Person(long id, String name, String surname, int points, int totalPoints) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -53,7 +53,7 @@ public class Person implements Serializable {
         this.totalPoints = totalPoints;
     }
 
-    public Person(String id, String name, String surname, int points, int totalPoints, Bitmap profileImg, ArrayList<Trophy> trophies) {
+    public Person(long id, String name, String surname, int points, int totalPoints, Bitmap profileImg, ArrayList<Trophy> trophies) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -73,7 +73,7 @@ public class Person implements Serializable {
         return true;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
