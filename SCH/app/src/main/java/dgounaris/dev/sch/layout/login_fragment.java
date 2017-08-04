@@ -26,11 +26,16 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 import dgounaris.dev.sch.APIHandler.APIHelper;
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.LoginActivity;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.Trophies.Trophy;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by DimitrisLPC on 18/5/2017.
@@ -82,156 +87,36 @@ public class login_fragment extends Fragment {
     }
 
     private void onLoginAttempt(String username, String password) {
-        RequestParams rp = new RequestParams();
-        rp.add("username", username); rp.add("password", password);
-        APIHelper.post("/login", rp, new JsonHttpResponseHandler() {
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Call<Person> loginCall = apiService.loginAttempt(username, password);
+        loginCall.enqueue(new Callback<Person>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                if (statusCode==204) {
-                    Toast.makeText(getContext(), "Bad reply from server. Try again later.", Toast.LENGTH_SHORT).show();
+            public void onResponse(Call<Person> call, Response<Person> response) {
+                if (response.code()>=500) {
+                    Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                for (int i=0;i<response.length(); i++) {
-                    try {
-                        JSONObject json = response.getJSONObject(i);
-                        onLoginVerified(json.getLong("c_Id"));
-                    } catch (JSONException e) {
-                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-                    }
+                if (response.code()>=400) {
+                    Toast.makeText(getContext(), "Error: Bad input provided", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (response.code()==204) {
+                    Toast.makeText(getContext(), "Error: Invalid credentials", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (response.code()==200) {
+                    Person person = response.body();
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("activeperson", person);
+                    startActivity(intent);
                 }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Invalid credentials.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Invalid credentials.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Invalid credentials.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            public void onFailure(Call<Person> call, Throwable t) {
+                Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void onLoginVerified(final long id) {
-        RequestParams rp = new RequestParams();
-        rp.add("id", ((Long)id).toString());
-        APIHelper.get("/person/" + id + "/details", rp, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                if (statusCode==204) {
-                    Toast.makeText(getContext(), "Bad reply from server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                for (int i=0;i<response.length(); i++) {
-                    try {
-                        final JSONObject json = response.getJSONObject(i);
-                        JSONArray trophies = json.getJSONArray("p_Trophies");
-                        final ArrayList<Trophy> myTrophies = new ArrayList<Trophy>();
-                        for (int j=0;j<trophies.length(); j++) {
-                            final JSONObject jsonTrophy = trophies.getJSONObject(j);
-                            APIHelper.get("/trophy/" + jsonTrophy.getString("t_Id") + "/image", null, new FileAsyncHttpResponseHandler(getContext()) {
-                                @Override
-                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                                    //todo get default trophy icon and still create trophy
-                                }
-
-                                @Override
-                                public void onSuccess(int statusCode, Header[] headers, File file) {
-                                    String filePath = file.getPath();
-                                    Bitmap myImg = BitmapFactory.decodeFile(filePath);
-                                    try {
-                                        myTrophies.add(new Trophy(
-                                                jsonTrophy.getLong("t_Id"),
-                                                jsonTrophy.getString("t_Name"),
-                                                jsonTrophy.getString("t_Description"),
-                                                myImg
-                                        ));
-                                    } catch (JSONException e) {
-
-                                    }
-                                }
-                            });
-                        }
-                        APIHelper.get("/person/" + id + "/image", null, new FileAsyncHttpResponseHandler(getContext()) {
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                                //todo get default picture and still call onPersonFetched after
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, File file) {
-                                String filePath = file.getPath();
-                                Bitmap myImg = BitmapFactory.decodeFile(filePath);
-                                try {
-                                    onPersonFetched(id, json.getString("p_Name"), json.getString("p_Surname"), json.getInt("p_Points"), json.getInt("p_TotalPoints"), myImg, myTrophies);
-                                } catch (JSONException e) {
-                                    Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    } catch (JSONException e) {
-                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(getContext(), "Could not load user details.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void onPersonFetched(long id, String name, String surname, int points, int totalPoints, Bitmap img, ArrayList<Trophy> myTrophies) {
-        Person person = new Person(
-                id,
-                name,
-                surname,
-                points,
-                totalPoints,
-                img,
-                myTrophies
-        );
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        intent.putExtra("activeperson", person);
-        startActivity(intent);
     }
 
 }

@@ -28,7 +28,7 @@ public interface ApiInterface {
 
     //checks for person existance and returns person if exists otherwise empty
     @POST("/login")
-    Call<Person> loginAttempt(
+    Call<Person> loginAttempt( //todo for the first test no pic is used, add it later
             @Field("username") String username,
             @Field("password") String password
     );

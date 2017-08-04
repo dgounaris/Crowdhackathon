@@ -132,7 +132,7 @@ public class register_fragment extends Fragment {
                         for (int i=0;i<response.length();i++) {
                             try {
                                 JSONObject json = response.getJSONObject(i);
-                                onUserRegistered(json.getString("c_Id"));
+                                onUserRegistered(json.getLong("c_Id"));
                             } catch (JSONException e) {
                                 Toast.makeText(getContext(), "Something went wrong. Try again later", Toast.LENGTH_SHORT).show();
                             }
@@ -253,9 +253,9 @@ public class register_fragment extends Fragment {
         }
     }
 
-    private void onUserRegistered(final String id) {
+    private void onUserRegistered(final long id) {
         RequestParams rp = new RequestParams();
-        rp.add("id", id);
+        rp.add("id", ((Long)id).toString());
         APIHelper.get("/person/" + id + "/details", rp, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -282,7 +282,7 @@ public class register_fragment extends Fragment {
                                     Bitmap myImg = BitmapFactory.decodeFile(filePath);
                                     try {
                                         myTrophies.add(new Trophy(
-                                                jsonTrophy.getString("t_Id"),
+                                                jsonTrophy.getLong("t_Id"),
                                                 jsonTrophy.getString("t_Name"),
                                                 jsonTrophy.getString("t_Description"),
                                                 myImg
@@ -333,7 +333,7 @@ public class register_fragment extends Fragment {
         });
     }
 
-    private void onPersonFetched(String id, String name, String surname, int points, int totalPoints, Bitmap img, ArrayList<Trophy> myTrophies) {
+    private void onPersonFetched(long id, String name, String surname, int points, int totalPoints, Bitmap img, ArrayList<Trophy> myTrophies) {
         Person person = new Person(
                 id,
                 name,

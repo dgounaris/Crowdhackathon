@@ -9,16 +9,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class Bin {
 
-    @SerializedName("id")
+    @SerializedName("Id")
     private long id;
-    @SerializedName("latlong")
-    private LatLng latlong;
-    @SerializedName("hasSpace")
+    @SerializedName("Lat")
+    private double Lat;
+    @SerializedName("Long")
+    private double Long;
+    @SerializedName("Space")
     private boolean hasSpace;
 
-    public Bin(long id, LatLng latlong, boolean hasSpace) {
+    public Bin(long id, double Lat, double Long, boolean hasSpace) {
         this.id = id;
-        this.latlong = latlong;
+        this.Lat = Lat;
+        this.Long = Long;
         this.hasSpace = hasSpace;
     }
 
@@ -27,7 +30,7 @@ public class Bin {
     }
 
     public LatLng getLatlong() {
-        return latlong;
+        return new LatLng(Lat, Long);
     }
 
     public boolean isHasSpace() {
@@ -35,7 +38,7 @@ public class Bin {
     }
 
     public void setLatlong(LatLng latlong) {
-        this.latlong = latlong;
+        this.Lat = latlong.latitude; this.Long = latlong.longitude;
     }
 
     public void setHasSpace(boolean hasSpace) {
