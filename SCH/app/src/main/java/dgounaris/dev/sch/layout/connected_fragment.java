@@ -9,22 +9,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import dgounaris.dev.sch.BluetoothConnectThread;
+import dgounaris.dev.sch.BluetoothConnection.BluetoothConnectThread;
+import dgounaris.dev.sch.BluetoothConnection.ManageConnectThread;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
@@ -47,6 +49,7 @@ public class connected_fragment extends Fragment {
     BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     ArrayList<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
     BluetoothDevice device_clicked = null;
+    TextView textView;
 
     public connected_fragment() {
         // Required empty public constructor
@@ -69,7 +72,7 @@ public class connected_fragment extends Fragment {
             if (mBluetoothAdapter.isDiscovering())
                 mBluetoothAdapter.cancelDiscovery();
 
-            // check for permissions
+            // check for necessary permissions
             int permissionCheck = ContextCompat.checkSelfPermission(getContext(), "Manifest.permission.ACCESS_FINE_LOCATION");
             permissionCheck += ContextCompat.checkSelfPermission(getContext(), "Manifest.permission.ACCESS_COARSE_LOCATION");
             if (permissionCheck != 0) {
@@ -79,6 +82,7 @@ public class connected_fragment extends Fragment {
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             getActivity().registerReceiver(mReceiver, filter);
             mBluetoothAdapter.startDiscovery();
+
 
         }
     }
@@ -96,7 +100,6 @@ public class connected_fragment extends Fragment {
                 IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                 getActivity().registerReceiver(mReceiver, filter);
                 mBluetoothAdapter.startDiscovery();
-
             }
         }
     }
@@ -106,12 +109,16 @@ public class connected_fragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
+            // delete textview
+            ((ViewGroup) textView.getParent()).removeView(textView);
+
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 devices.add(device);
-//                ListView listView = (ListView) getActivity().findViewById(R.id.bluetooth_list);
+                connection_status.setVisibility(View.INVISIBLE);
+                progress_bar.setVisibility(View.INVISIBLE);
 
                 Bluetooth_devicesAdapter bluetoothDeviceArrayAdapter = new Bluetooth_devicesAdapter(context, devices);
                 bluetooth_list.setVisibility(View.VISIBLE);
@@ -121,19 +128,46 @@ public class connected_fragment extends Fragment {
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                         device_clicked = devices.get(position);
                         ((ViewGroup) bluetooth_list.getParent()).removeView(bluetooth_list);
-                        onConnectionSeeking();
+//                        onConnectionSeeking();
 
-                        BluetoothConnectThread thread = new BluetoothConnectThread();
-                        if (thread.connect(device_clicked, UUID.randomUUID())) {
-                            connection_status.setText("Succesfully Connected to device: " + device_clicked.getName());
-                            progress_bar.setVisibility(View.INVISIBLE);
+//                        Toast.makeText(getActivity(), "Successfully Connected", Toast.LENGTH_LONG);
+
+
+                        BluetoothConnectThread bluetoothConnectThread = new BluetoothConnectThread();
+                        while (!bluetoothConnectThread.connect(device_clicked, UUID.fromString("51fd4c3c-6578-4de7-bf45-e51fabc2366c"))) // UUID ON SERVER MUST BE THE SAME WITH THIS ONE
+                            Toast.makeText(getContext(), "Something went wrong, trying again", Toast.LENGTH_LONG);
+
+                        // wait for server to accept connection
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
+
+                        ManageConnectThread manageConnectThread = new ManageConnectThread();
+
+                        // receive data from bin (number of items thrown)
+                        int rcvNum = 0;
+                        if (bluetoothConnectThread.getbTSocket().isConnected()) {
+                            try {
+                                rcvNum = manageConnectThread.receiveData(bluetoothConnectThread.getbTSocket());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            // some (or none) items were thrown into the bin
+                            // update the points of user
+                            addPoints(rcvNum * 10); // 10 points for each item
+
+
+                        }
+                        connection_status.setText(rcvNum + "  items thrown in the recycling bin and " + rcvNum * 10 + " points collected!");
+                        connection_status.setVisibility(View.VISIBLE);
+                        onConnectionEstablished();
                     }
                 });
 
 
-            } else
-                Toast.makeText(getContext(), "No device found", Toast.LENGTH_LONG).show();
+            }
         }
     };
 
@@ -147,6 +181,14 @@ public class connected_fragment extends Fragment {
         points_raw_text = (TextView) view.findViewById(R.id.points_rawtext);
         bluetooth_list = (ListView) view.findViewById(R.id.bluetooth_list);
 
+        // show text
+        textView = new TextView(getContext());
+        textView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        textView.setText("Scanning for nearby recycling bins...");
+        LinearLayout layout = (LinearLayout) view.findViewById(R.id.connected_layout);
+        layout.addView(textView, 0);
 
 //        onConnectionSeeking();
         return view;
@@ -171,28 +213,28 @@ public class connected_fragment extends Fragment {
     }
 
     private void onConnectionEstablished() {
-        connection_status.setText("Connection established");
+        //connection_status.setText("Connection established");
         progress_bar.setVisibility(View.INVISIBLE);
         points_text.setVisibility(View.VISIBLE);
         points_text.setText(activeperson.getPoints() + "");
         points_raw_text.setVisibility(View.VISIBLE);
-        Handler myHandler = new Handler();
-        myHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        addPoints(10);
-                    }
-                }, 1000
-        );
-        myHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        addPoints(10);
-                    }
-                }, 2000
-        );
+//        Handler myHandler = new Handler();
+//        myHandler.postDelayed(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        addPoints(10);
+//                    }
+//                }, 1000
+//        );
+//        myHandler.postDelayed(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        addPoints(10);
+//                    }
+//                }, 2000
+//        );
     }
 
     private void addPoints(int points_added) {
