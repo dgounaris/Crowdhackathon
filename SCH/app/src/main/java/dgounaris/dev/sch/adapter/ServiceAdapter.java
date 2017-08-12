@@ -25,10 +25,15 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 import dgounaris.dev.sch.APIHandler.APIHelper;
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.layout.profile_fragment;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rhogarj on 5/13/2017.
@@ -62,58 +67,25 @@ public class ServiceAdapter extends ArrayAdapter<Service> {
             public void onClick(View v) {
                 RequestParams rp = new RequestParams();
                 rp.add("personid", ((Long)activePerson.getId()).toString()); rp.add("serviceid", ((Long)current_service.getId()).toString());
-                APIHelper.post("/services/redeem", rp, new JsonHttpResponseHandler() {
+                ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+                Call<Integer> pointsCall = apiService.redeemService(activePerson.getId(), current_service.getId());
+                pointsCall.enqueue(new Callback<Integer>() {
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        if (statusCode==204) {
-                            Toast.makeText(getContext(), "Could not load points from server.", Toast.LENGTH_SHORT).show();
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        if (response.code()>=500) {
+                            Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(getContext(), "Service redeemed successfully", Toast.LENGTH_SHORT).show();
-                        for (int i=0;i<response.length();i++) {
-                            try {
-                                JSONObject json = response.getJSONObject(i);
-                                activePerson.setPoints(json.getInt("p_Points"));
-                            } catch (JSONException e) {
-                                Toast.makeText(getContext(), "Could not load points from server.", Toast.LENGTH_SHORT).show();
-                            }
+                        if (response.code()>=400) {
+                            Toast.makeText(getContext(), "Error: Bad input provided", Toast.LENGTH_SHORT).show();
+                            return;
                         }
+                        activePerson.setPoints(response.body());
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        if (statusCode>=500) {
-                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (statusCode==401) {
-                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        if (statusCode>=500) {
-                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (statusCode==401) {
-                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        if (statusCode>=500) {
-                            Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (statusCode==401) {
-                            Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

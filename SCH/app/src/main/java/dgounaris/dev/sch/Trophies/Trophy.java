@@ -1,8 +1,14 @@
 package dgounaris.dev.sch.Trophies;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -16,19 +22,17 @@ import dgounaris.dev.sch.Utils.SerializableImage;
  */
 
 public class Trophy implements Serializable {
-    @SerializedName("Id")
+    @SerializedName("trophy_Id")
     private long id;
-    @SerializedName("Name")
+    @SerializedName("Trophy_Name")
     private String title;
-    @SerializedName("Description")
+    @SerializedName("Trophy_Description")
     private String description;
-    private SerializableImage image = new SerializableImage();
 
-    public Trophy(long id, String t, String d, Bitmap img) {
+    public Trophy(long id, String t, String d) {
         this.id = id;
         title = t;
         description = d;
-        image.setImage(img);
     }
 
     public long getId() { return id; }
@@ -37,8 +41,25 @@ public class Trophy implements Serializable {
         return title;
     }
 
-    public Bitmap getImage() {
-        return image.getImage();
+    public void getImage(final ImageView imgView, Context context) {
+        Picasso.with(context)
+                .load("http://10.0.2.2:3003/person/" + this.id + "/image")
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
+                        imgView.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        //todo add default img
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
     }
 
     public String getDescription() {

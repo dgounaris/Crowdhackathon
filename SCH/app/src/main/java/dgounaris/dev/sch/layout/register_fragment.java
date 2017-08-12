@@ -284,8 +284,7 @@ public class register_fragment extends Fragment {
                                         myTrophies.add(new Trophy(
                                                 jsonTrophy.getLong("t_Id"),
                                                 jsonTrophy.getString("t_Name"),
-                                                jsonTrophy.getString("t_Description"),
-                                                myImg
+                                                jsonTrophy.getString("t_Description")
                                         ));
                                     } catch (JSONException e) {
 

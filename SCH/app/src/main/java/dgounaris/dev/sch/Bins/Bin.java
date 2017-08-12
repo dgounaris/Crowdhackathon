@@ -16,13 +16,13 @@ public class Bin {
     @SerializedName("Long")
     private double Long;
     @SerializedName("Space")
-    private boolean hasSpace;
+    private int space;
 
-    public Bin(long id, double Lat, double Long, boolean hasSpace) {
+    public Bin(long id, double Lat, double Long, int space) {
         this.id = id;
         this.Lat = Lat;
         this.Long = Long;
-        this.hasSpace = hasSpace;
+        this.space = space;
     }
 
     public long getId() {
@@ -34,14 +34,14 @@ public class Bin {
     }
 
     public boolean hasSpace() {
-        return hasSpace;
+        return space>0;
     }
 
     public void setLatlong(LatLng latlong) {
         this.Lat = latlong.latitude; this.Long = latlong.longitude;
     }
 
-    public void setHasSpace(boolean hasSpace) {
-        this.hasSpace = hasSpace;
+    public void setSpace(int space) {
+        this.space = space;
     }
 }

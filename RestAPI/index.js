@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 //var id = crypto.randomBytes(20).toString('hex');
 
 var defaultpic = "profile_default.png";
-//LOGIN NEEDS FIXING
+//FIXED ERRORS, STILL NEEDS TO RETURN WHOLE PERSON INSTEAD OF ID
 app.post('/login', function(req, res) {
     //BODY KEY NAMES
     //username: username
@@ -40,18 +40,37 @@ app.post('/login', function(req, res) {
         con.query("select Password from credentials where Username = ?", [req.body.username], function (err, rows) {
             if (err) return res.status(500).end();
             if (rows.length == 0) return res.status(401).end();
-            var storedPw = rows[0].c_Password;
+            var storedPw = rows[0].Password;
             if (passwordHash.verify(req.body.password, storedPw)) {
-                con.query("select Person_Id from credentials where Username = ? and Password = ?", [req.body.username, storedPw], function (err, result) {
+                con.query("select Id, Name, Surname, Points, TotalPoints from people where Id = (select Person_Id from credentials where Username = ? and Password = ?)", [req.body.username, storedPw], function (err, rows) {
                     if (err) return res.status(500).end();
-                    console.log("found!");
-                    sendResponse(result, res);
+                    var response = rows;
+                    console.log("Retrieving trophies for user logging in");
+                    con.query("select Trophy_Id, Trophy_Name, Trophy_Description from trophies, people_has_trophies where People_idPeople = (select Person_Id from credentials where Username = ? and Password = ?) and Trophies_idTrophies = Trophy_Id", [req.body.username, storedPw], function(err, trophies) {
+                        if (err) return res.status(500).end();
+                        response[0].Trophies = trophies;
+                        sendResponse(response[0], res);
+                        var dirname = './uploads/';
+                        console.log("Connected!");
+                        con.query("select Image from people where Id = (select Person_Id from credentials where Username = ? and Password = ?)", [req.body.username, storedPw], function (err, rows) {
+                            console.log("Done!");
+                            if (err) return res.status(500).end();
+                            if (rows.length == 0) return res.status(400).end();
+                            var filepath = rows[0].Image;
+                            res.sendFile(path.resolve(dirname + filepath));
+                        });
+                        /* AN ALTERNATE IDEA FOR SENDING, MAY BE USEFUL
+                        res.writeHead(200, {'Content-Type': 'image/png'});
+                        fs.readFile(dirname + dataarray[0].substr(1, dataarray[0].length - 2), function(err, data) {
+                        var img64 = new Buffer(data, 'binary').toString('base64');
+                        res.emit("send_img", img64);
+                        });*/
+                    });
                 });
             }
             else {
                 res.status(401).end();
             }
-            sendResponse(result,res);
         });
     });
 });
@@ -83,14 +102,14 @@ app.get('/person/:id/details', function(req, res) {
             console.log("Retrieving trophies for " + req.params.id);
             con.query("select Trophy_Id, Trophy_Name, Trophy_Description from trophies, people_has_trophies where People_idPeople = ? and Trophies_idTrophies = Trophy_Id", [req.params.id], function(err, trophies) {
                 if (err) return res.status(500).end();
-                response[0].p_Trophies = trophies;
-                sendResponse(response, res);
+                response[0].Trophies = trophies;
+                sendResponse(response[0], res);
             });
         });
     });
 });
 
-//Error: ENOENT: no such file or directory, stat 'C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\RestAPI\uploads\undefined'
+//DONE
 app.get('/person/:id/image', function(req, res) {
     console.log("Retrieving image for " + req.params.id);
     req.params.id = parseInt(req.params.id);
@@ -101,7 +120,7 @@ app.get('/person/:id/image', function(req, res) {
             console.log("Done!");
             if (err) return res.status(500).end();
             if (rows.length == 0) return res.status(400).end();
-            var filepath = rows[0].p_Image;
+            var filepath = rows[0].Image;
             res.sendFile(path.resolve(dirname + filepath));
         });
         /* AN ALTERNATE IDEA FOR SENDING, MAY BE USEFUL
@@ -127,7 +146,7 @@ app.get('/person/:id/trophies', function(req, res) {
     });
 });
 
-//Error: ENOENT: no such file or directory, stat 'C:\Users\Rhogarj\Documents\GitHub\Crowdhackathon\RestAPI\native\undefined'
+//DONE
 app.get('/trophy/:id/image', function(req, res) {
     console.log("Retriecing image for trophy " + req.params.id);
     req.params.id = parseInt(req.params.id);
@@ -137,7 +156,7 @@ app.get('/trophy/:id/image', function(req, res) {
         con.query("select Trophy_Image from Trophies where Trophy_Id = ?", [req.params.id], function (err, rows) {
             if (err) return res.status(500).end();
             if (rows.length == 0) return res.status(400).end();
-            var filepath = rows[0].t_Image;
+            var filepath = rows[0].Trophy_Image;
             res.sendFile(path.resolve(dirname + filepath));
             console.log("sent!");
         });
@@ -150,15 +169,14 @@ app.get('/people/toppoints/:max', function(req, res) {
     con.connect(function(err) {
         console.log("Connected!");
         req.params.max = parseInt(req.params.max);
-        if (err) throw res.status(500).end();
         con.query("select Id, `people`.`Name`, Surname, Points, TotalPoints from people where TotalPoints > 0 order by TotalPoints desc limit ?", [req.params.max] , function (err, result) {
-            if (err) throw res.status(500).end();
+            if (err) return res.status(500).end();
             sendResponse(result,res);
         });
     });
 });
 
-//BODY NEEDS FIXING
+//DONE
 app.post('/person/addpoints', function(req, res) {
     //BODY KEY NAMES
     //person id: id
@@ -169,7 +187,7 @@ app.post('/person/addpoints', function(req, res) {
             if (err) return res.status(500).end();
             con.query("select Points from People where Id = ?", [req.body.id], function(err, rows) {
                 if (err) return res.status(500).end();
-                sendResponse(rows);
+                sendResponse(rows[0].Points, res);
             });
         });
     });
@@ -261,13 +279,32 @@ app.get('/services/available', function(req, res) {
     });
 });
 
-
+//DONE
 app.post('/services/redeem', function(req, res) {
     //BODY KEY NAMES
     //person id: personid
     //service id: serviceid
     console.log("Redeeming " + req.body.serviceid + " from " + req.body.personid);
-    db.serialize(function() {
+    con.connect(function(err) {
+        console.log("Connected!");
+        con.query("update People p1 set p1.Points = p1.Points - (select s1.Points_Required from services s1 where s1.Service_Id = ?) where p1.Id = ? and exists(select * from services s where s.Service_Id = ? and s.Empty_Slots > 0 and p1.Points>=s.Points_Required)", [req.body.serviceid, req.body.personid, req.body.serviceid], function(err, rows) {
+            if (err) throw err;
+            if (rows.affectedRows>0) {
+                con.query("update Services set Empty_Slots = Empty_Slots - 1 where Service_Id = ?", [req.body.serviceid], function(err, rows) {
+                    if (err) throw err;
+                    con.query("insert into People_Services values (?, ?)", [req.body.personid, req.body.serviceid], function(err, rows) {
+                        if (err) throw err;
+                        con.query("select Points from People where Id = ?", [req.body.personid], function(err, rows) {
+                            if (err) throw err;
+                            pointsAfter = rows[0].Points;
+                            sendResponse(pointsAfter, res);
+                        });
+                    });
+                });
+            }
+        });
+    })
+    /*db.serialize(function() {
         db.run("update People set p_Points = p_Points - (select s_Points from Services where s_Id = ?) where p_Id = ? and exists(select * from Services, People where s_Id = ? and p_Id = ? and s_EmptySlots > 0 and p_Points > s_Points)", [req.body.serviceid, req.body.personid, req.body.serviceid, req.body.personid], function(err, rows) {
             if (err) return res.status(500).end();
         });
@@ -288,7 +325,7 @@ app.post('/services/redeem', function(req, res) {
                 });
             }
         });
-    });
+    });*/
 });
 
 //DONE
