@@ -46,6 +46,8 @@ public class Person implements Serializable {
     private int points;
     @SerializedName("TotalPoints")
     private int totalPoints;
+    @SerializedName("City_City_id")
+    private long cityId;
     @SerializedName("Trophies")
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
@@ -115,6 +117,10 @@ public class Person implements Serializable {
 
     public int getTotalPoints() {
         return totalPoints;
+    }
+
+    public long getCityId() {
+        return cityId;
     }
 
     public void setName(String name) {

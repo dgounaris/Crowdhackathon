@@ -16,6 +16,8 @@ public class Service {
     private int slots;
     @SerializedName("Points_Required")
     private int points_needed;
+    @SerializedName("City_City_id")
+    private long cityId;
 
     public Service(long id, String name, int slots, int points_needed) {
         this.id = id;
@@ -50,5 +52,9 @@ public class Service {
 
     public long getId() {
         return id;
+    }
+
+    public long getCityId() {
+        return cityId;
     }
 }

@@ -43,7 +43,7 @@ public class Trophy implements Serializable {
 
     public void getImage(final ImageView imgView, Context context) {
         Picasso.with(context)
-                .load("http://10.0.2.2:3003/person/" + this.id + "/image")
+                .load("http://10.0.2.2:3003/trophy/" + this.id + "/image")
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){

@@ -120,7 +120,7 @@ public class profile_fragment extends Fragment {
 
     public void showServices() {
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<List<Service>> serviceCall = apiService.availableServices();
+        Call<List<Service>> serviceCall = apiService.availableServices(activeperson.getCityId());
         serviceCall.enqueue(new Callback<List<Service>>() {
             @Override
             public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {

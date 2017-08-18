@@ -1,6 +1,15 @@
 <form id        =  "uploadForm"
      enctype   =  "multipart/form-data"
-     action    =  "/people/:personid/upload"
+     action    =  "/person/upload"
+     method    =  "post"
+>
+<input type="file" name="image" />
+<input type="submit" value="Upload Image" name="submit">
+</form>
+
+<form id        =  "registerForm"
+     enctype   =  "multipart/form-data"
+     action    =  "/person/register"
      method    =  "post"
 >
 <input type="file" name="image" />

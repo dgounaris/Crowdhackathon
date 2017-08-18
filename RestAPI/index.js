@@ -4,6 +4,7 @@ var multer = require('multer');
 var app = express();
 var path = require('path');
 var fs = require('fs');
+var multiparty = require('multiparty');
 var mysql = require('mysql');
 var con = mysql.createConnection({
     host: "localhost",
@@ -42,7 +43,7 @@ app.post('/login', function(req, res) {
             if (rows.length == 0) return res.status(401).end();
             var storedPw = rows[0].Password;
             if (passwordHash.verify(req.body.password, storedPw)) {
-                con.query("select Id, Name, Surname, Points, TotalPoints from people where Id = (select Person_Id from credentials where Username = ? and Password = ?)", [req.body.username, storedPw], function (err, rows) {
+                con.query("select Id, Name, Surname, Points, TotalPoints, City_City_Id from people where Id = (select Person_Id from credentials where Username = ? and Password = ?)", [req.body.username, storedPw], function (err, rows) {
                     if (err) return res.status(500).end();
                     var response = rows;
                     console.log("Retrieving trophies for user logging in");
@@ -50,21 +51,6 @@ app.post('/login', function(req, res) {
                         if (err) return res.status(500).end();
                         response[0].Trophies = trophies;
                         sendResponse(response[0], res);
-                        var dirname = './uploads/';
-                        console.log("Connected!");
-                        con.query("select Image from people where Id = (select Person_Id from credentials where Username = ? and Password = ?)", [req.body.username, storedPw], function (err, rows) {
-                            console.log("Done!");
-                            if (err) return res.status(500).end();
-                            if (rows.length == 0) return res.status(400).end();
-                            var filepath = rows[0].Image;
-                            res.sendFile(path.resolve(dirname + filepath));
-                        });
-                        /* AN ALTERNATE IDEA FOR SENDING, MAY BE USEFUL
-                        res.writeHead(200, {'Content-Type': 'image/png'});
-                        fs.readFile(dirname + dataarray[0].substr(1, dataarray[0].length - 2), function(err, data) {
-                        var img64 = new Buffer(data, 'binary').toString('base64');
-                        res.emit("send_img", img64);
-                        });*/
                     });
                 });
             }
@@ -96,7 +82,7 @@ app.get('/person/:id/details', function(req, res) {
     req.params.id = parseInt(req.params.id);
     con.connect(function(err) {
         console.log("Connected!");
-        con.query("select Name, Surname, Points, TotalPoints from people where Id = ?", [req.params.id], function (err, rows) {
+        con.query("select Name, Surname, Points, TotalPoints, City_City_id from people where Id = ?", [req.params.id], function (err, rows) {
             if (err) return res.status(500).end();
             var response = rows;
             console.log("Retrieving trophies for " + req.params.id);
@@ -212,14 +198,20 @@ app.post('/person/upload', function(req, res) {
 
     var upload = multer({
         storage: storage
-    }).single('image');
+    }).fields(
+        [
+            { name: 'image', maxCount: 1 }
+        ]
+    )
 
     upload(req,res,function(err) {
         if (err) return res.status(500).end();
-        db.all("update People set p_Image = ? where p_Id = ?", [filename, passedId], function(err, rows) {
-            if (err) return res.status(500).end();
-            res.status(200).end();
-        });
+        con.connect(function(err) {
+            console.log("Connected!");
+            con.query("update People set Image = ? where Id = ?", [filename, passedId], function(err, rows) {
+                res.status(200).end();
+            })
+        })
     });
 });
 
@@ -230,50 +222,64 @@ app.post('/person/register', function(req, res) {
     //name key: name
     //surname key: surname
     //image key: image
-    console.log("Attempting registration with " + req.body.username + ", " + req.body.password + ", " + req.body.name + ", " + req.body.surname);
-    if (req.body.username == undefined || req.body.password == undefined || req.body.name == undefined || req.body.surname == undefined) {
-        return res.status(400).end();
-    }
-    db.serialize(function() {
-        var id = crypto.randomBytes(20).toString('hex'); //generating random id
-        var filename = defaultpic;
-        var storage = multer.diskStorage({
-            destination: function(req, file, callback) {
-                callback(null, './uploads');
-            },
-            filename: function(req, file, callback) {
-                filename = file.fieldname + "_" + id.substr(id.length-4, 3) + "_" + Date.now() + "." + file.mimetype.split("/").pop(); //avoiding duplicates
-                callback(null, filename);
-            }
-        });
-
-        var upload = multer({
-            storage: storage
-        }).single('image');
-
-        upload(req,res,function(err) {
-            if (err) throw err;
-            db.run("insert into People values(?,?,?,?,?,?)", [id, req.body.name, req.body.surname, 0, filename, 0], function(err, rows) {
-                if (err) throw err;
+    var form = new multiparty.Form();
+    form.parse(req, function(err, fields, files) {
+        if (fields.username == undefined || fields.password == undefined || fields.name == undefined || fields.surname == undefined) {
+            return res.status(400).end();
+        }
+        var username = fields.username.toString().substr(1, fields.username.toString().length-2);
+        var password = fields.password.toString().substr(1, fields.password.toString().length-2);
+        var name = fields.name.toString().substr(1, fields.name.toString().length-2);
+        var surname = fields.surname.toString().substr(1, fields.surname.toString().length-2);
+        console.log("Attempting registration with " + username + ", " + password + ", " + name + ", " + surname);
+        con.connect(function(err) {
+            var filename = defaultpic;
+            var storage = multer.diskStorage({
+                destination: function(req, file, callback) {
+                    callback(null, './uploads');
+                },
+                filename: function(req, file, callback) {
+                    var id = crypto.randomBytes(4).toString('hex'); //avoiding pic name duplicates
+                    filename = file.fieldName + "_" + id + "_" + Date.now() + "." + file.mimetype.split("/").pop(); //avoiding pic name duplicates
+                    callback(null, filename);
+                }
             });
-        });
-        //this is done last because i'd rather have "trash" users in people than "trash" credential pairs
-        var hashedPw = passwordHash.generate(req.body.password); //hashing password before sending to db
-        db.run("insert into Credentials values(?,?,?)", [id, req.body.username, hashedPw], function(err, rows) {
-            if (err) throw err;
-            var jsonResponse = [];
-            jsonResponse.push({'c_Id': id});
-            sendResponse(jsonResponse, res);
+
+            var upload = multer({
+                storage: storage
+            }).single('image');
+
+            upload(req,res,function(err) {
+                if (err) throw err;
+                con.query("insert into People values(?,?,?,?,?,?,?)", [null, name, surname, 0, filename, 0, 1], function(err, rows) {
+                    if (err) throw err;
+                    var id = rows.insertId;
+                    var hashedPw = passwordHash.generate(password.toString()); //hashing password before sending to db
+                    con.query("insert into Credentials values(?,?,?)", [username, hashedPw, id], function(err, rows) {
+                        if (err) throw err;
+                        con.query("select Id, Name, Surname, Points, TotalPoints, City_City_Id from people where Id = ?", [id], function (err, rows) {
+                            if (err) return res.status(500).end();
+                            var response = rows;
+                            console.log("Retrieving trophies for user logging in");
+                            con.query("select Trophy_Id, Trophy_Name, Trophy_Description from trophies, people_has_trophies where People_idPeople = ? and Trophies_idTrophies = Trophy_Id", [id], function(err, trophies) {
+                                if (err) return res.status(500).end();
+                                response[0].Trophies = trophies;
+                                sendResponse(response[0], res);
+                            });
+                        });
+                    });
+                });
+            });
         });
     });
 });
 
 //DONE
-app.get('/services/available', function(req, res) {
+app.get('/services/available/:cityid', function(req, res) {
     console.log("Getting available services...");
     con.connect(function(err) {
         console.log("Connected!");
-        con.query("select * from Services where Empty_Slots > 0 order by Points_Required desc", function (err, result) {
+        con.query("select * from Services where City_City_Id = ? and Empty_Slots > 0 order by Points_Required desc", [parseInt(req.params.cityid)], function (err, result) {
             sendResponse(result,res);
         });
     });
@@ -304,28 +310,6 @@ app.post('/services/redeem', function(req, res) {
             }
         });
     })
-    /*db.serialize(function() {
-        db.run("update People set p_Points = p_Points - (select s_Points from Services where s_Id = ?) where p_Id = ? and exists(select * from Services, People where s_Id = ? and p_Id = ? and s_EmptySlots > 0 and p_Points > s_Points)", [req.body.serviceid, req.body.personid, req.body.serviceid, req.body.personid], function(err, rows) {
-            if (err) return res.status(500).end();
-        });
-        db.all("select changes()", function(err, rows) {
-            if (rows.length == 0) return res.status(500).end();
-            else {
-                var pointsAfter = [];
-                db.all("select p_Points from People where p_Id = ?", [req.body.personid], function(err, rows) {
-                    if (err) return res.status(500).end();
-                    pointsAfter = rows;
-                });
-                db.run("update Services set s_EmptySlots = s_EmptySlots - 1 where s_Id = ?", [req.body.serviceid], function(err, rows) {
-                    if (err) return res.status(500).end();
-                });
-                db.run("insert into People_Services values (?, ?)", [req.body.personid, req.body.serviceid], function(err, rows) {
-                    if (err) return res.status(500).end();
-                    sendResponse(pointsAfter, res);
-                });
-            }
-        });
-    });*/
 });
 
 //DONE
