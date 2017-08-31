@@ -3,14 +3,19 @@ package dgounaris.dev.sch.People;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Debug;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.annotations.SerializedName;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,11 +42,12 @@ public class Person implements Serializable {
     private String name;
     @SerializedName("Surname")
     private String surname;
-    private SerializableImage mImage = new SerializableImage();
     @SerializedName("Points")
     private int points;
     @SerializedName("TotalPoints")
     private int totalPoints;
+    @SerializedName("City_City_id")
+    private long cityId;
     @SerializedName("Trophies")
     private ArrayList<Trophy> myTrophies = new ArrayList<>();
 
@@ -60,7 +66,6 @@ public class Person implements Serializable {
         this.points = points;
         this.totalPoints = totalPoints;
         this.myTrophies = trophies;
-        mImage.setImage(profileImg);
     }
 
     public boolean addPoints(int extrapoints) {
@@ -85,8 +90,25 @@ public class Person implements Serializable {
         return surname;
     }
 
-    public SerializableImage getmImage() {
-        return mImage;
+    public void getmImage(final ImageView imgView, Context context) {
+        Picasso.with(context)
+                .load("http://10.0.2.2:3003/person/" + this.id + "/image")
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
+                        imgView.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        //todo add default img
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
     }
 
     public int getPoints() {
@@ -95,6 +117,10 @@ public class Person implements Serializable {
 
     public int getTotalPoints() {
         return totalPoints;
+    }
+
+    public long getCityId() {
+        return cityId;
     }
 
     public void setName(String name) {
@@ -106,7 +132,7 @@ public class Person implements Serializable {
     }
 
     public void setImage(SerializableImage mImage) {
-        this.mImage = mImage;
+        //todo when updating profile img
     }
 
     public void setPoints(int points) {

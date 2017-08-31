@@ -8,14 +8,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class Service {
 
-    @SerializedName("Id")
+    @SerializedName("Service_Id")
     private long id;
     @SerializedName("Name")
     private String name;
-    @SerializedName("EmptySlots")
+    @SerializedName("Empty_Slots")
     private int slots;
-    @SerializedName("Points")
+    @SerializedName("Points_Required")
     private int points_needed;
+    @SerializedName("City_City_id")
+    private long cityId;
 
     public Service(long id, String name, int slots, int points_needed) {
         this.id = id;
@@ -50,5 +52,9 @@ public class Service {
 
     public long getId() {
         return id;
+    }
+
+    public long getCityId() {
+        return cityId;
     }
 }

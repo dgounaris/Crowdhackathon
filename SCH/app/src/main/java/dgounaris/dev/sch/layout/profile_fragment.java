@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,7 +65,8 @@ public class profile_fragment extends Fragment {
 
         //SET NAME, BALANCE
         ImageView profileimg = (ImageView) view.findViewById(R.id.profile_img);
-        profileimg.setImageBitmap(activeperson.getmImage().getImage());
+        activeperson.getmImage(profileimg, getContext());
+        //profileimg.setImageBitmap(activeperson.getmImage(getContext()));
         TextView nameText = (TextView) view.findViewById(R.id.name);
         nameText.setText(activeperson.getName() + " " + activeperson.getSurname());
         TextView balance = (TextView) view.findViewById(R.id.balance);
@@ -117,9 +119,8 @@ public class profile_fragment extends Fragment {
     }
 
     public void showServices() {
-        final ArrayList<Service> services = new ArrayList<>();
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<List<Service>> serviceCall = apiService.availableServices();
+        Call<List<Service>> serviceCall = apiService.availableServices(activeperson.getCityId());
         serviceCall.enqueue(new Callback<List<Service>>() {
             @Override
             public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
@@ -152,79 +153,6 @@ public class profile_fragment extends Fragment {
             @Override
             public void onFailure(Call<List<Service>> call, Throwable t) {
                 Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        APIHelper.get("/services/available", null, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                for (int i=0;i<response.length(); i++) {
-                    try {
-                        JSONObject json = response.getJSONObject(i);
-                        services.add(new Service(
-                                json.getLong("s_Id"),
-                                json.getString("s_Name"),
-                                json.getInt("s_EmptySlots"),
-                                json.getInt("s_Points")
-                        ));
-                    } catch (JSONException e) {
-                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                if (services.isEmpty()) {
-                    Toast.makeText(getContext(), "Sorry, no available redeeming options.", Toast.LENGTH_LONG).show();
-                } else {
-                    Dialog myDialog = new Dialog(getActivity());
-                    myDialog.setContentView(R.layout.redeem_view);
-                    final ListView serviceList = (ListView) myDialog.findViewById(R.id.service_list);
-                    serviceList.setAdapter(new ServiceAdapter(getContext(), services, getParentFragment(), activeperson));
-                    myDialog.setCancelable(true);
-                    myDialog.setTitle("ListView");
-                    myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            //refresh points
-                            TextView balance = (TextView) getView().findViewById(R.id.balance);
-                            balance.setText(activeperson.getPoints() + " points");
-                        }
-                    });
-                    myDialog.show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (statusCode>=500) {
-                    Toast.makeText(getContext(), "Unable to reach server. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (statusCode==401) {
-                    Toast.makeText(getContext(), "Could not process request. Try again later.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
             }
         });
     }

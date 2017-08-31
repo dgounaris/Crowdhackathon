@@ -167,6 +167,7 @@ CREATE TABLE `credentials` (
 
 LOCK TABLES `credentials` WRITE;
 /*!40000 ALTER TABLE `credentials` DISABLE KEYS */;
+INSERT INTO `credentials` VALUES ('user1', 'sha1$6358380e$1$9acb22dc052e9255f1c985fbecb7cded06149d64', 1),('user2', 'sha1$24a65b26$1$5d56ae67ad946b00352b5178dbd5a564fdfba3cc', 2),('user3', 'sha1$2b1aedae$1$5f7e4bac8fa64873f3c9f25003c93d003d84c5a8', 3),('user4', 'sha1$311396e4$1$9e8e3f15509d6650c0480d8a2c7b52d7811a6327', 4),('user5', 'sha1$83ae18ea$1$dc35073fdaf05598f035ec152334a16d84158389', 5);
 /*!40000 ALTER TABLE `credentials` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,7 +321,7 @@ CREATE TABLE `people` (
   `Name` varchar(45) NOT NULL,
   `Surname` varchar(45) NOT NULL,
   `Points` int(11) NOT NULL,
-  `Image` blob,
+  `Image` varchar(45),
   `TotalPoints` int(11) DEFAULT NULL,
   `City_City_Id` bigint(40) NOT NULL,
   PRIMARY KEY (`Id`,`City_City_Id`),
@@ -377,7 +378,6 @@ DROP TABLE IF EXISTS `people_services`;
 CREATE TABLE `people_services` (
   `People_idPeople` bigint(40) NOT NULL,
   `Services_idServices` bigint(40) NOT NULL,
-  PRIMARY KEY (`People_idPeople`,`Services_idServices`),
   KEY `fk_People_has_Services_Services1_idx` (`Services_idServices`),
   KEY `fk_People_has_Services_People_idx` (`People_idPeople`),
   CONSTRAINT `fk_People_has_Services_People` FOREIGN KEY (`People_idPeople`) REFERENCES `people` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -486,7 +486,7 @@ CREATE TABLE `trophies` (
   `Trophy_Id` int(11) NOT NULL AUTO_INCREMENT,
   `Trophy_Name` varchar(45) NOT NULL,
   `Trophy_Description` varchar(45) DEFAULT NULL,
-  `Trophy_Image` blob,
+  `Trophy_Image` varchar(45),
   PRIMARY KEY (`Trophy_Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
