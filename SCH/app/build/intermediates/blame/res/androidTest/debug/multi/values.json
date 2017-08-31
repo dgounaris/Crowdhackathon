@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "C:\\Users\\Rhogarj\\Documents\\GitHub\\Crowdhackathon\\SCH\\app\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 45,
+                    "endOffset": 96
+                },
+                "from": {
+                    "file": "C:\\Users\\Rhogarj\\.android\\build-cache\\23048be7aaabd00ff15930113b8a6fd0c77e26ad\\output\\res\\values\\values.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 229,
+                        "endColumn": 45,
+                        "endOffset": 270
+                    }
+                }
+            }
+        ]
+    }
+]

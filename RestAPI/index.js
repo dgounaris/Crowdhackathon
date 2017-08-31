@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 //var id = crypto.randomBytes(20).toString('hex');
 
 var defaultpic = "profile_default.png";
-//LOGIN NEEDS FIXING
+//DONE
 app.post('/login', function(req, res) {
     //BODY KEY NAMES
     //username: username
@@ -38,6 +38,7 @@ app.post('/login', function(req, res) {
     con.connect(function(err) {
         console.log("Connected!");
         con.query("select Password from credentials where Username = ?", [req.body.username], function (err, rows) {
+            console.log("In");
             if (err) return res.status(500).end();
             if (rows.length == 0) return res.status(401).end();
             var storedPw = rows[0].c_Password;
@@ -51,7 +52,6 @@ app.post('/login', function(req, res) {
             else {
                 res.status(401).end();
             }
-            sendResponse(result,res);
         });
     });
 });
@@ -175,7 +175,7 @@ app.post('/person/addpoints', function(req, res) {
     });
 });
 
-
+//DONE
 app.post('/person/upload', function(req, res) {
     //BODY KEY NAMES
     //person id: id
@@ -198,12 +198,17 @@ app.post('/person/upload', function(req, res) {
 
     upload(req,res,function(err) {
         if (err) return res.status(500).end();
-        db.all("update People set p_Image = ? where p_Id = ?", [filename, passedId], function(err, rows) {
-            if (err) return res.status(500).end();
-            res.status(200).end();
+        con.connect(function(err) {
+            console.log("Connected!");
+            con.query("update People set Image = ? where Id = ?", [filename, passedId], function (err, result) {
+                console.log("IN");
+                if (err) return res.status(500).end();
+                res.status(200).end();
+            });
         });
     });
 });
+
 
 app.post('/person/register', function(req, res) {
     //BODY KEY NAMES
