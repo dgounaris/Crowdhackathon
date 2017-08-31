@@ -26,11 +26,7 @@ app.use(bodyParser.json());
 //var id = crypto.randomBytes(20).toString('hex');
 
 var defaultpic = "profile_default.png";
-<<<<<<< HEAD
 //DONE
-=======
-//FIXED ERRORS, STILL NEEDS TO RETURN WHOLE PERSON INSTEAD OF ID
->>>>>>> 1e68af5d5a742b1edea01eaff9f4358dd784f29b
 app.post('/login', function(req, res) {
     //BODY KEY NAMES
     //username: username
@@ -43,7 +39,6 @@ app.post('/login', function(req, res) {
     con.connect(function(err) {
         console.log("Connected!");
         con.query("select Password from credentials where Username = ?", [req.body.username], function (err, rows) {
-            console.log("In");
             if (err) return res.status(500).end();
             if (rows.length == 0) return res.status(401).end();
             var storedPw = rows[0].Password;
@@ -70,13 +65,21 @@ app.post('/login', function(req, res) {
 app.post('/person/newpass', function(req, res) {
     //BODY KEY NAMES
     //username: username
-    //password: password
-    var hashedPw = passwordHash.generate(req.body.password);
+    //oldpass: old password
+    //newpass: new password
     con.connect(function(err) {
         console.log("Connected!");
-        con.query("update credentials set Password = ? where Username = ?", [hashedPw, req.body.username], function (err, result) {
-            if (err) return res.status(500).end();
-            res.status(200).end();
+        con.query("select Password from credentials where Username = ?", [req.body.username], function (err, rows) {
+            if (passwordHash.verify(req.body.oldpass, rows[0].Password)) {
+                var hashedPw = passwordHash.generate(req.body.newpass);
+                con.query("update credentials set Password = ? where Username = ?", [hashedPw, req.body.username], function (err, result) {
+                    if (err) return res.status(500).end();
+                    res.status(200).end();
+                });
+            }
+            else {
+                res.status(401).end();
+            }
         });
     });
 });
@@ -184,7 +187,7 @@ app.post('/person/addpoints', function(req, res) {
     });
 });
 
-//DONE
+
 app.post('/person/upload', function(req, res) {
     //BODY KEY NAMES
     //person id: id
@@ -213,22 +216,12 @@ app.post('/person/upload', function(req, res) {
         if (err) return res.status(500).end();
         con.connect(function(err) {
             console.log("Connected!");
-<<<<<<< HEAD
-            con.query("update People set Image = ? where Id = ?", [filename, passedId], function (err, result) {
-                console.log("IN");
-                if (err) return res.status(500).end();
-                res.status(200).end();
-            });
-        });
-=======
             con.query("update People set Image = ? where Id = ?", [filename, passedId], function(err, rows) {
                 res.status(200).end();
             })
         })
->>>>>>> 1e68af5d5a742b1edea01eaff9f4358dd784f29b
     });
 });
-
 
 app.post('/person/register', function(req, res) {
     //BODY KEY NAMES
@@ -247,6 +240,7 @@ app.post('/person/register', function(req, res) {
         var name = fields.name.toString().substr(1, fields.name.toString().length-2);
         var surname = fields.surname.toString().substr(1, fields.surname.toString().length-2);
         console.log("Attempting registration with " + username + ", " + password + ", " + name + ", " + surname);
+        console.log(files);
         con.connect(function(err) {
             var filename = defaultpic;
             var storage = multer.diskStorage({
