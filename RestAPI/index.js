@@ -1,6 +1,5 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var multer = require('multer');
 var app = express();
 var path = require('path');
 var fs = require('fs');
@@ -21,9 +20,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
-
-//create some random hash numbers for id's
-//var id = crypto.randomBytes(20).toString('hex');
 
 var defaultpic = "profile_default.png";
 //DONE
@@ -188,38 +184,40 @@ app.post('/person/addpoints', function(req, res) {
 });
 
 
-app.post('/person/upload', function(req, res) {
+app.post('/person/upload', function(req, res) { //this is untested, no available testing in android app. should be working though.
     //BODY KEY NAMES
     //person id: id
     //image: image
-    var passedId = req.body.id;
-    var filename = defaultpic;
-    var storage = multer.diskStorage({
-        destination: function(req, file, callback) {
-            callback(null, './uploads');
-        },
-        filename: function(req, file, callback) {
-            filename = file.fieldname + "_" + passedId.substr(passedId.length-4, 3) + "_" + Date.now() + "." + file.mimetype.split("/").pop(); //avoiding duplicates
-            callback(null, filename);
+    var form = new multiparty.Form();
+    form.parse(req, function(err, fields, files) {
+        if (err) {
+            throw err;
+            return;
         }
-    });
-
-    var upload = multer({
-        storage: storage
-    }).fields(
-        [
-            { name: 'image', maxCount: 1 }
-        ]
-    )
-
-    upload(req,res,function(err) {
-        if (err) return res.status(500).end();
+        if (fields.id == undefined) {
+            return res.status(400).end();
+        }
         con.connect(function(err) {
-            console.log("Connected!");
-            con.query("update People set Image = ? where Id = ?", [filename, passedId], function(err, rows) {
-                res.status(200).end();
-            })
-        })
+            console.log("Changing image for user " + fields.id);
+            var oldpath = files.image[0].path;
+            var randomdigits = crypto.randomBytes(2).toString('hex'); //avoiding pic name duplicates
+            var filename = randomdigits + "_" + Date.now() + "." + files.image[0].originalFilename.split(".").pop(); //last pop is to get the extension
+            console.log("After moving file is: " + filename);
+            var newpath = "./uploads/" + filename;
+            fs.rename(oldpath, newpath, function(err) {
+                if (err) {
+                    throw err;
+                    return;
+                }
+                con.query("update people set Image=? where Id=?", [filename, fields.id], function(err, rows) {
+                    if (err) {
+                        throw err;
+                        return;
+                    }
+                    return res.status(200).end();
+                });
+            });
+        });
     });
 });
 
@@ -232,6 +230,10 @@ app.post('/person/register', function(req, res) {
     //image key: image
     var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
+        if (err) {
+            throw err;
+            return;
+        }
         if (fields.username == undefined || fields.password == undefined || fields.name == undefined || fields.surname == undefined) {
             return res.status(400).end();
         }
@@ -240,26 +242,25 @@ app.post('/person/register', function(req, res) {
         var name = fields.name.toString().substr(1, fields.name.toString().length-2);
         var surname = fields.surname.toString().substr(1, fields.surname.toString().length-2);
         console.log("Attempting registration with " + username + ", " + password + ", " + name + ", " + surname);
-        console.log(files);
+        console.log("---------");
+        console.log(files.image[0]);
         con.connect(function(err) {
+            if (err) {
+                throw err;
+                return;
+            }
             var filename = defaultpic;
-            var storage = multer.diskStorage({
-                destination: function(req, file, callback) {
-                    callback(null, './uploads');
-                },
-                filename: function(req, file, callback) {
-                    var id = crypto.randomBytes(4).toString('hex'); //avoiding pic name duplicates
-                    filename = file.fieldName + "_" + id + "_" + Date.now() + "." + file.mimetype.split("/").pop(); //avoiding pic name duplicates
-                    callback(null, filename);
+            //getting the temporarily saved picture and putting it to my server folder, then adding data to database
+            var oldpath = files.image[0].path;
+            var randomdigits = crypto.randomBytes(2).toString('hex'); //avoiding pic name duplicates
+            var filename = randomdigits + "_" + Date.now() + "." + files.image[0].originalFilename.split(".").pop(); //last pop is to get the extension
+            console.log("After moving file is: " + filename);
+            var newpath = "./uploads/" + filename;
+            fs.rename(oldpath, newpath, function(err) {
+                if (err) {
+                    throw err;
+                    return;
                 }
-            });
-
-            var upload = multer({
-                storage: storage
-            }).single('image');
-
-            upload(req,res,function(err) {
-                if (err) throw err;
                 con.query("insert into People values(?,?,?,?,?,?,?)", [null, name, surname, 0, filename, 0, 1], function(err, rows) {
                     if (err) throw err;
                     var id = rows.insertId;
