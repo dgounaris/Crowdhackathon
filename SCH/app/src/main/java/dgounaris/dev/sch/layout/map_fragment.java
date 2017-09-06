@@ -17,6 +17,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -98,16 +101,8 @@ public class map_fragment extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 List<Bin> myBins = response.body();
-                for (int i=0;i<myBins.size();i++) { //add marker for all bins, red if it's full, green otherwise
-                    float markerColor;
-                    if (myBins.get(i).hasSpace()) {
-                        markerColor = BitmapDescriptorFactory.HUE_GREEN;
-                    }
-                    else {
-                        markerColor = BitmapDescriptorFactory.HUE_RED;
-                    }
-                    map.addMarker(new MarkerOptions().position(myBins.get(i).getLatlong()).title("Bin").icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
-                }
+                addMarkers(myBins);
+                addHeatmap(myBins);
             }
 
             @Override
@@ -115,6 +110,35 @@ public class map_fragment extends Fragment implements OnMapReadyCallback {
                 Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addMarkers(List<Bin> myBins) {
+        for (int i=0;i<myBins.size();i++) { //add marker for all bins, red if it's full, green otherwise
+            float markerColor;
+            if (myBins.get(i).hasSpace()) {
+                markerColor = BitmapDescriptorFactory.HUE_GREEN;
+            }
+            else {
+                markerColor = BitmapDescriptorFactory.HUE_RED;
+            }
+            map.addMarker(new MarkerOptions().position(myBins.get(i).getLatlong()).title("Bin").icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
+        }
+    }
+
+    private void addHeatmap(List<Bin> myBins) {
+        //todo
+        // demo heatmap function. Bins need to have weights (normalized total values or number of recently added items) to determine active areas
+        //Also needs utility and possible bug fixes
+        List<WeightedLatLng> weightedLatLngs = new ArrayList<>();
+        for (int i=0;i<myBins.size();i++) {
+            weightedLatLngs.add(new WeightedLatLng(myBins.get(i).getLatlong(), Math.random()));
+        }
+        if (weightedLatLngs.size()==0) {
+            return; //HeatmapTileProvider.Builder() does not accept empty data
+        }
+        HeatmapTileProvider heatmapProvider = new HeatmapTileProvider.Builder().weightedData(weightedLatLngs).radius(40).build();
+        TileOverlayOptions overlayOptions = new TileOverlayOptions().tileProvider(heatmapProvider);
+        map.addTileOverlay(overlayOptions);
     }
 
     @Override
