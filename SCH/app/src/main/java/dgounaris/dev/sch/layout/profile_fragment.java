@@ -1,6 +1,7 @@
 package dgounaris.dev.sch.layout;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -16,13 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.HOFActivity;
-import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.adapter.ServiceAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class profile_fragment extends Fragment {
 
@@ -51,7 +56,8 @@ public class profile_fragment extends Fragment {
 
         //SET NAME, BALANCE
         ImageView profileimg = (ImageView) view.findViewById(R.id.profile_img);
-        profileimg.setImageBitmap(activeperson.getmImage().getImage());
+        activeperson.getmImage(profileimg, getContext());
+        //profileimg.setImageBitmap(activeperson.getmImage(getContext()));
         TextView nameText = (TextView) view.findViewById(R.id.name);
         nameText.setText(activeperson.getName() + " " + activeperson.getSurname());
         TextView balance = (TextView) view.findViewById(R.id.balance);
@@ -104,37 +110,42 @@ public class profile_fragment extends Fragment {
     }
 
     public void showServices() {
-        ArrayList<Service> services;
-        services = ((MainActivity) getActivity()).getAvailableServices();
-        if (services.isEmpty()) {
-            Toast.makeText(getContext(), "Sorry, no available redeeming options.", Toast.LENGTH_LONG).show();
-        } else {
-            Dialog myDialog = new Dialog(getActivity());
-            myDialog.setContentView(R.layout.redeem_view);
-            final ListView serviceList = (ListView) myDialog.findViewById(R.id.service_list);
-            serviceList.setAdapter(new ServiceAdapter(getContext(), services, this));
-            serviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
-                    int[] sDet = ((ServiceAdapter) serviceList.getAdapter()).getCurrentServiceDetails(pos);
-                    onRedeemPoints(sDet[0], sDet[1]);
+        ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
+        Call<List<Service>> serviceCall = apiService.availableServices(activeperson.getCityId());
+        serviceCall.enqueue(new Callback<List<Service>>() {
+            @Override
+            public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
+                if (response.code()>=500) {
+                    Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            });
-            myDialog.setCancelable(true);
-            myDialog.setTitle("ListView");
-            myDialog.show();
-        }
-    }
+                if (response.code()==204) {
+                    Toast.makeText(getContext(), "Sorry, no available redeeming options.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<Service> services = response.body();
+                Dialog myDialog = new Dialog(getActivity());
+                myDialog.setContentView(R.layout.redeem_view);
+                final ListView serviceList = (ListView) myDialog.findViewById(R.id.service_list);
+                serviceList.setAdapter(new ServiceAdapter(getContext(), (ArrayList<Service>)services, getParentFragment(), activeperson));
+                myDialog.setCancelable(true);
+                myDialog.setTitle("ListView");
+                myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        //refresh points
+                        TextView balance = (TextView) getView().findViewById(R.id.balance);
+                        balance.setText(activeperson.getPoints() + " points");
+                    }
+                });
+                myDialog.show();
+            }
 
-    public void onRedeemPoints(int serviceid, int points) {
-        int result = ((MainActivity) getActivity()).onRedeemPoints(serviceid, points);
-        if (result >= 0) {
-            Toast.makeText(getContext(), "Transaction successful", Toast.LENGTH_SHORT).show();
-            TextView textView = (TextView) getView().findViewById(R.id.balance);
-            textView.setText(result + " points");
-            activeperson.setPoints(result);
-        } else {
-            Toast.makeText(getContext(), "Error processing request, please try again later.", Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onFailure(Call<List<Service>> call, Throwable t) {
+                Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.Trophies.Trophy;
 
@@ -33,12 +32,7 @@ public class TrophyAdapter extends ArrayAdapter<Trophy> {
         Trophy current_word = getItem(position);
 
         ImageView image = (ImageView) listItemView.findViewById(R.id.image);
-        if (current_word.getImage()!=null)
-            image.setImageBitmap(current_word.getImage());
-        else
-            image.setVisibility(View.GONE);
-
-        MyDBHelper dbHelper = new MyDBHelper(getContext());
+        current_word.getImage(image, getContext());
 
         TextView miwok = (TextView) listItemView.findViewById(R.id.title);
         miwok.setText(current_word.getTitle());

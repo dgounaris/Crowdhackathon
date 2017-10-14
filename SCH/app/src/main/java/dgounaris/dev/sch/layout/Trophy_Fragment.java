@@ -54,6 +54,5 @@ public class Trophy_Fragment extends Fragment{
         return view;
     }
 
-
 }
 

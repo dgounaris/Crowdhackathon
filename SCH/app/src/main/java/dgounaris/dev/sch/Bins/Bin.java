@@ -1,6 +1,7 @@
 package dgounaris.dev.sch.Bins;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by DimitrisLPC on 16/5/2017.
@@ -8,37 +9,39 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Bin {
 
-    private int index;
-    private LatLng latlong;
-    private boolean hasSpace;
+    @SerializedName("Id")
+    private long id;
+    @SerializedName("Lat")
+    private double Lat;
+    @SerializedName("Long")
+    private double Long;
+    @SerializedName("Space")
+    private int space;
 
-    public Bin(int index, LatLng latlong, boolean hasSpace) {
-        this.index = index;
-        this.latlong = latlong;
-        this.hasSpace = hasSpace;
+    public Bin(long id, double Lat, double Long, int space) {
+        this.id = id;
+        this.Lat = Lat;
+        this.Long = Long;
+        this.space = space;
     }
 
-    public int getIndex() {
-        return index;
+    public long getId() {
+        return id;
     }
 
     public LatLng getLatlong() {
-        return latlong;
+        return new LatLng(Lat, Long);
     }
 
-    public boolean isHasSpace() {
-        return hasSpace;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
+    public boolean hasSpace() {
+        return space>0;
     }
 
     public void setLatlong(LatLng latlong) {
-        this.latlong = latlong;
+        this.Lat = latlong.latitude; this.Long = latlong.longitude;
     }
 
-    public void setHasSpace(boolean hasSpace) {
-        this.hasSpace = hasSpace;
+    public void setSpace(int space) {
+        this.space = space;
     }
 }

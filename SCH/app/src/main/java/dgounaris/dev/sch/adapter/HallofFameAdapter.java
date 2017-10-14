@@ -1,18 +1,15 @@
 package dgounaris.dev.sch.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import dgounaris.dev.sch.People.Person;
-import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 
 /**
@@ -34,7 +31,7 @@ public class HallofFameAdapter extends ArrayAdapter<Person>{
         TextView name = (TextView) listItemView.findViewById(R.id.hof_name);
         name.setText(getItem(position).getName() + " " + getItem(position).getSurname());
         TextView points = (TextView) listItemView.findViewById(R.id.hof_points);
-        points.setText(getItem(position).getPoints()+"");
+        points.setText(getItem(position).getTotalPoints()+"");
 
         return listItemView;
     }

@@ -3,20 +3,26 @@ package dgounaris.dev.sch.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.http.RequestParams;
 
 import java.util.ArrayList;
 
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
+import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.layout.profile_fragment;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rhogarj on 5/13/2017.
@@ -25,6 +31,7 @@ import dgounaris.dev.sch.layout.profile_fragment;
 public class ServiceAdapter extends ArrayAdapter<Service> {
 
     Fragment parentFragment;
+    Person activePerson; //used to complete transactions
 
     @NonNull
     @Override
@@ -43,25 +50,43 @@ public class ServiceAdapter extends ArrayAdapter<Service> {
         slotstext.setText("Empty slots: " + current_service.getSlots());
         TextView pointstext = (TextView) listItemView.findViewById(R.id.points_needed);
         pointstext.setText(current_service.getPoints_needed() + " points needed");
-        Button activateButton = (Button) listItemView.findViewById(R.id.button_activate);
+        final Button activateButton = (Button) listItemView.findViewById(R.id.button_activate);
         activateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((profile_fragment)parentFragment).onRedeemPoints(current_service.getId(), current_service.getPoints_needed());
+                RequestParams rp = new RequestParams();
+                rp.add("personid", ((Long)activePerson.getId()).toString()); rp.add("serviceid", ((Long)current_service.getId()).toString());
+                ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
+                Call<Integer> pointsCall = apiService.redeemService(activePerson.getId(), current_service.getId());
+                pointsCall.enqueue(new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        if (response.code()>=500) {
+                            Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (response.code()>=400) {
+                            Toast.makeText(getContext(), "Error: Bad input provided", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        activePerson.setPoints(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
         return listItemView;
     }
 
-    public ServiceAdapter(Context context, ArrayList<Service> arrayList, Fragment parent) {
+    public ServiceAdapter(Context context, ArrayList<Service> arrayList, Fragment parent, Person person) {
         super(context, 0, arrayList);
         parentFragment = parent;
-    }
-
-    public int[] getCurrentServiceDetails(int pos) {
-        int[] array = {getItem(pos).getId(), getItem(pos).getPoints_needed()};
-        return array;
+        activePerson = person;
     }
 
 }

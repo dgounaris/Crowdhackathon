@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
 import dgounaris.dev.sch.R;
 
 /**

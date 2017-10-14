@@ -1,17 +1,25 @@
 package dgounaris.dev.sch.People;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by DimitrisLPC on 13/5/2017.
  */
 
 public class Service {
 
-    private int id;
+    @SerializedName("Service_Id")
+    private long id;
+    @SerializedName("Name")
     private String name;
+    @SerializedName("Empty_Slots")
     private int slots;
+    @SerializedName("Points_Required")
     private int points_needed;
+    @SerializedName("City_City_id")
+    private long cityId;
 
-    public Service(int id, String name, int slots, int points_needed) {
+    public Service(long id, String name, int slots, int points_needed) {
         this.id = id;
         this.name = name;
         this.slots = slots;
@@ -42,7 +50,11 @@ public class Service {
         return points_needed;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
+    }
+
+    public long getCityId() {
+        return cityId;
     }
 }

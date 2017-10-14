@@ -9,7 +9,6 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -21,17 +20,25 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import dgounaris.dev.sch.DBHelper.MyDBHelper;
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by DimitrisLPC on 20/5/2017.
@@ -51,7 +58,6 @@ public class register_fragment extends Fragment {
     Button registerbtn;
     Bitmap profileimageselected;
     ImageView photochosen;
-    MyDBHelper databaseHelper;
 
     public register_fragment() {
         // Required empty public constructor
@@ -65,7 +71,6 @@ public class register_fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        databaseHelper = new MyDBHelper(getContext());
     }
 
     @Override
@@ -91,25 +96,46 @@ public class register_fragment extends Fragment {
         registerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!username.getText().toString().equals("") && !password.getText().toString().equals("") && !password_reenter.getText().toString().equals("") && !name.getText().toString().equals("") && !surname.getText().toString().equals("")) {
-                    if (databaseHelper.checkForUniqueUsername(username.getText().toString())) {
-                        if (checkPasswordEntries(password.getText().toString(), password_reenter.getText().toString())) {
-                            databaseHelper.registerAccount(username.getText().toString(), password.getText().toString(), name.getText().toString(), surname.getText().toString(), profileimageselected);
-                            int id = databaseHelper.checkCredentials(username.getText().toString(), password.getText().toString());
-                            Person person = databaseHelper.getPerson(id);
+                if (!password.getText().toString().equals(password_reenter.getText().toString())) {
+                    Toast.makeText(getContext(), "The passwords do not match.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File imgFile = File.createTempFile(System.currentTimeMillis() + "", ".png", getContext().getCacheDir());
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(imgFile));
+                    profileimageselected.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    os.flush();
+                    os.close();
+                    ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
+                    RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile);
+                    MultipartBody.Part body = MultipartBody.Part.createFormData("image", imgFile.getName(), reqFile);
+                    Call<Person> registerCall = apiService.registerPerson(username.getText().toString(), password.getText().toString(), name.getText().toString(), surname.getText().toString(), body);
+                    registerCall.enqueue(new Callback<Person>() {
+                        @Override
+                        public void onResponse(Call<Person> call, Response<Person> response) {
+                            if (response.code()>=500) {
+                                Toast.makeText(getContext(), "Couldn't reach server. Try again later.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            if (response.code()>=400) {
+                                Toast.makeText(getContext(), "Bad input provided. Try again later.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Person person = response.body();
                             Intent intent = new Intent(getActivity(), MainActivity.class);
                             intent.putExtra("activeperson", person);
                             startActivity(intent);
-                        } else {
-                            Toast.makeText(getContext(), "Error: Password entries do not match", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    else {
-                        Toast.makeText(getContext(), "Error: Username already in use", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else {
-                    Toast.makeText(getContext(), "Error: All fields are mandatory", Toast.LENGTH_SHORT).show();
+
+                        @Override
+                        public void onFailure(Call<Person> call, Throwable t) {
+                            Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -152,23 +178,16 @@ public class register_fragment extends Fragment {
 
     public Bitmap onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-        byte[] byteArray = bytes.toByteArray();
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
-
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
+        /*try {
+            File destination = File.createTempFile(System.currentTimeMillis() + ".png", null, getContext().getCacheDir());
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(destination));
+            thumbnail.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return thumbnail;
     }
@@ -193,12 +212,6 @@ public class register_fragment extends Fragment {
             profileimageselected = myImage;
             photochosen.setImageBitmap(profileimageselected);
         }
-    }
-
-    private boolean checkPasswordEntries(String password, String reenter) {
-        if (password.equals(""))
-            return false;
-        return password.equals(reenter);
     }
 
 }
