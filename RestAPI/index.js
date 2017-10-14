@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var http = require('http');
+var https = require('https');
 var path = require('path');
 var fs = require('fs');
 var multiparty = require('multiparty');
@@ -14,6 +16,16 @@ var con = mysql.createConnection({
 });
 var crypto = require('crypto');
 var passwordHash = require('password-hash');
+
+//certificates for https
+var options = {
+    key: fs.readFileSync('./CA/intermediate/private/www.wincycle.gr.key'),
+    cert: fs.readFileSync('./CA/intermediate/certs/www.wincycle.gr.crt'),
+    ca: fs.readFileSync('./CA/intermediate/certs/ca-chain.crt'),
+    passphrase: 'w1ncycl3',
+    requestCert: true,
+    rejectUnauthorized: true
+}
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -343,4 +355,10 @@ var sendResponse = function(data, res) {
     }
 }
 
-app.listen(3003);
+http.createServer(app).listen(3003, function(err) {
+    console.log("HTTP server listening...");
+});
+
+https.createServer(options, app).listen(8433, function(err) {
+    console.log("HTTPS server listening...");
+});

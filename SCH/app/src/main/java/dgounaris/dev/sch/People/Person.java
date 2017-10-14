@@ -2,33 +2,19 @@ package dgounaris.dev.sch.People;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Debug;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.gson.annotations.SerializedName;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
-import dgounaris.dev.sch.Utils.SerializableImage;
 import dgounaris.dev.sch.Trophies.Trophy;
+import dgounaris.dev.sch.Utils.PicassoHTTPS;
+import dgounaris.dev.sch.Utils.SerializableImage;
 
 /**
  * Created by DimitrisLPC on 13/5/2017.
@@ -91,8 +77,8 @@ public class Person implements Serializable {
     }
 
     public void getmImage(final ImageView imgView, Context context) {
-        Picasso.with(context)
-                .load("http://10.0.2.2:3003/person/" + this.id + "/image")
+        PicassoHTTPS.getInstance(context)
+                .load("https://10.0.2.2:8433/person/" + this.id + "/image")
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){

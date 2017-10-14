@@ -1,18 +1,15 @@
 package dgounaris.dev.sch.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import dgounaris.dev.sch.People.Person;
-import dgounaris.dev.sch.People.Service;
 import dgounaris.dev.sch.R;
 
 /**

@@ -2,19 +2,12 @@ package dgounaris.dev.sch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.People.Person;
@@ -33,7 +26,7 @@ public class HOFActivity extends AppCompatActivity {
     }
 
     private void TopTotalPoints(int max) {
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getClient(getApplicationContext()).create(ApiInterface.class);
         Call<List<Person>> peopleCall = apiService.getTopByTotalPoints(max);
         peopleCall.enqueue(new Callback<List<Person>>() {
             @Override

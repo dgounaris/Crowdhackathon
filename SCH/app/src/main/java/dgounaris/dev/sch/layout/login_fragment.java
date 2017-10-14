@@ -1,8 +1,6 @@
 package dgounaris.dev.sch.layout;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,26 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.ArrayList;
-
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.LoginActivity;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.Trophies.Trophy;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +31,6 @@ public class login_fragment extends Fragment {
     EditText password;
     Button login;
     Button to_register;
-    APIHelper apiHelper;
 
     public login_fragment() {
         // Required empty public constructor
@@ -87,7 +70,7 @@ public class login_fragment extends Fragment {
     }
 
     private void onLoginAttempt(String username, String password) {
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
         Call<Person> loginCall = apiService.loginAttempt(username, password);
         loginCall.enqueue(new Callback<Person>() {
             @Override
@@ -114,6 +97,7 @@ public class login_fragment extends Fragment {
 
             @Override
             public void onFailure(Call<Person> call, Throwable t) {
+                Log.d("ONLOGINERROR", t.toString());
                 Toast.makeText(getContext(), "Something went wrong. Try again later.", Toast.LENGTH_SHORT).show();
             }
         });

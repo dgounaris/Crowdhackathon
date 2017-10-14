@@ -1,6 +1,5 @@
 package dgounaris.dev.sch.layout;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,17 +19,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.Bins.Bin;
@@ -83,7 +75,7 @@ public class map_fragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getAllBins() {
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
         Call<List<Bin>> binCall = apiService.getAllBins();
         binCall.enqueue(new Callback<List<Bin>>() {
             @Override

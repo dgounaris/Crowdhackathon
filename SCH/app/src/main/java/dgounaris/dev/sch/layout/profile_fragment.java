@@ -15,18 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.HOFActivity;
@@ -119,7 +110,7 @@ public class profile_fragment extends Fragment {
     }
 
     public void showServices() {
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
         Call<List<Service>> serviceCall = apiService.availableServices(activeperson.getCityId());
         serviceCall.enqueue(new Callback<List<Service>>() {
             @Override

@@ -12,9 +12,9 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
+import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import retrofit2.http.POST;
 
 
 /**
@@ -36,7 +36,7 @@ public interface ApiInterface {
     //checks for person existance and returns person if exists otherwise empty
     @FormUrlEncoded
     @POST("/login")
-    Call<Person> loginAttempt( //todo for the first test no pic is used, add it later
+    Call<Person> loginAttempt(
             @Field("username") String username,
             @Field("password") String password
     );

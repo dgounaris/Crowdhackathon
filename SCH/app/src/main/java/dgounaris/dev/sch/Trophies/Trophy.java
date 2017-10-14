@@ -2,7 +2,6 @@ package dgounaris.dev.sch.Trophies;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
@@ -11,11 +10,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-import dgounaris.dev.sch.People.Person;
-import dgounaris.dev.sch.Utils.SerializableImage;
 
 /**
  * Created by antonis on 13-May-17.

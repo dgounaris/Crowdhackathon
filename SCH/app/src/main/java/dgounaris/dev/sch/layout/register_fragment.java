@@ -9,7 +9,6 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -19,43 +18,27 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.Trophies.Trophy;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.bitmap;
 
 /**
  * Created by DimitrisLPC on 20/5/2017.
@@ -123,7 +106,7 @@ public class register_fragment extends Fragment {
                     profileimageselected.compress(Bitmap.CompressFormat.PNG, 100, os);
                     os.flush();
                     os.close();
-                    ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+                    ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
                     RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile);
                     MultipartBody.Part body = MultipartBody.Part.createFormData("image", imgFile.getName(), reqFile);
                     Call<Person> registerCall = apiService.registerPerson(username.getText().toString(), password.getText().toString(), name.getText().toString(), surname.getText().toString(), body);

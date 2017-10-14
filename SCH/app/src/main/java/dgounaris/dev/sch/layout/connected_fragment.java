@@ -1,9 +1,6 @@
 package dgounaris.dev.sch.layout;
 
 import android.animation.ValueAnimator;
-import android.app.Dialog;
-import android.app.DownloadManager;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,45 +9,21 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import cz.msebera.android.httpclient.Header;
-import dgounaris.dev.sch.APIHandler.APIHelper;
 import dgounaris.dev.sch.APIHandler.ApiClient;
 import dgounaris.dev.sch.APIHandler.ApiInterface;
-import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.adapter.Bluetooth_devicesAdapter;
 import dgounaris.dev.sch.bluetooth_devicesActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static dgounaris.dev.sch.R.id.container;
 
 /**
  * Created by DimitrisLPC on 17/5/2017.
@@ -150,7 +123,7 @@ public class connected_fragment extends Fragment {
     }
 
     private void addPoints(int points_added) {
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getClient(getContext()).create(ApiInterface.class);
         Call<Integer> pointsCall = apiService.addPoints(activeperson.getId(), points_added);
         pointsCall.enqueue(new Callback<Integer>() {
             @Override
