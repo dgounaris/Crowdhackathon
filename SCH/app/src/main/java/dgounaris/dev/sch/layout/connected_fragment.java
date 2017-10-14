@@ -212,10 +212,6 @@ public class connected_fragment extends Fragment {
         layout.addView(textView, 0);
 
 //        onConnectionSeeking();
-=======
-        //onConnectionSeeking();
-        onConnectionEstablished();
->>>>>>> WithoutLocalDatabase
         return view;
     }
 
@@ -235,12 +231,6 @@ public class connected_fragment extends Fragment {
         progress_bar.setVisibility(View.VISIBLE);
         points_text.setVisibility(View.INVISIBLE);
         points_raw_text.setVisibility(View.INVISIBLE);
-<<<<<<< HEAD
-=======
-        //onConnectionEstablished();
-        Intent intent = new Intent(getActivity(), bluetooth_devicesActivity.class);
-        startActivity(intent);
->>>>>>> WithoutLocalDatabase
     }
 
     private void onConnectionEstablished() {
@@ -299,6 +289,7 @@ public class connected_fragment extends Fragment {
         });
         animator.start();
         activeperson.setPoints(activeperson.getPoints() + points_added);
+       // ((MainActivity) getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
 <<<<<<< HEAD
 =======
