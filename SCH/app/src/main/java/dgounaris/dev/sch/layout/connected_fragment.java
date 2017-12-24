@@ -2,10 +2,7 @@ package dgounaris.dev.sch.layout;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
-<<<<<<< HEAD
 import android.bluetooth.BluetoothAdapter;
-=======
->>>>>>> WithoutLocalDatabase
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-<<<<<<< HEAD
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,38 +17,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-=======
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
->>>>>>> WithoutLocalDatabase
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import dgounaris.dev.sch.APIHandler.ApiClient;
+import dgounaris.dev.sch.APIHandler.ApiInterface;
 import dgounaris.dev.sch.BluetoothConnection.BluetoothConnectThread;
 import dgounaris.dev.sch.BluetoothConnection.ManageConnectThread;
-import dgounaris.dev.sch.MainActivity;
 import dgounaris.dev.sch.People.Person;
 import dgounaris.dev.sch.R;
 import dgounaris.dev.sch.adapter.Bluetooth_devicesAdapter;
-
-import static android.app.Activity.RESULT_OK;
-=======
-import dgounaris.dev.sch.APIHandler.ApiClient;
-import dgounaris.dev.sch.APIHandler.ApiInterface;
-import dgounaris.dev.sch.People.Person;
-import dgounaris.dev.sch.R;
-import dgounaris.dev.sch.bluetooth_devicesActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
->>>>>>> WithoutLocalDatabase
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by DimitrisLPC on 17/5/2017.
@@ -199,7 +183,6 @@ public class connected_fragment extends Fragment {
         connection_status = (TextView) view.findViewById(R.id.connection_status);
         points_text = (TextView) view.findViewById(R.id.points_text);
         points_raw_text = (TextView) view.findViewById(R.id.points_rawtext);
-<<<<<<< HEAD
         bluetooth_list = (ListView) view.findViewById(R.id.bluetooth_list);
 
         // show text
@@ -212,10 +195,6 @@ public class connected_fragment extends Fragment {
         layout.addView(textView, 0);
 
 //        onConnectionSeeking();
-=======
-        //onConnectionSeeking();
-        onConnectionEstablished();
->>>>>>> WithoutLocalDatabase
         return view;
     }
 
@@ -235,12 +214,6 @@ public class connected_fragment extends Fragment {
         progress_bar.setVisibility(View.VISIBLE);
         points_text.setVisibility(View.INVISIBLE);
         points_raw_text.setVisibility(View.INVISIBLE);
-<<<<<<< HEAD
-=======
-        //onConnectionEstablished();
-        Intent intent = new Intent(getActivity(), bluetooth_devicesActivity.class);
-        startActivity(intent);
->>>>>>> WithoutLocalDatabase
     }
 
     private void onConnectionEstablished() {
@@ -300,11 +273,4 @@ public class connected_fragment extends Fragment {
         animator.start();
         activeperson.setPoints(activeperson.getPoints() + points_added);
     }
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> WithoutLocalDatabase
 }
