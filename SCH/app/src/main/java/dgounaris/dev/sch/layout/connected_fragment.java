@@ -272,5 +272,6 @@ public class connected_fragment extends Fragment {
         });
         animator.start();
         activeperson.setPoints(activeperson.getPoints() + points_added);
+       // ((MainActivity) getActivity()).onAddPoints(activeperson.getId(), points_added);
     }
 }
